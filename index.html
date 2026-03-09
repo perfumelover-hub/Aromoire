@@ -1,0 +1,1010 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Aromoire · изысканный подбор парфюма</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Supabase подключение -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- PWA манифест -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+/* 🎨 ТЕМЫ С ПЛАВНЫМ ПЕРЕХОДОМ */
+:root {
+  /* ТЁМНАЯ (базовая) */
+  --bg: #09090f;
+  --bg2: #0e0e18;
+  --text: #f2eddf;
+  --text2: rgba(210,200,170,0.52);
+  --a1: #c9a84c;
+  --a1b: #e8cb7a;
+  --a2: #1b3a6e;
+  --a2b: #2d5fa0;
+  --a2c: #5b8dc4;
+  --danger: #c47a6e;
+  --gl: rgba(255,255,255,0.035);
+  --glb: rgba(200,168,76,0.14);
+  --gg: linear-gradient(135deg,#c9a84c 0%,#e8cb7a 50%,#b8922e 100%);
+  --gn: linear-gradient(135deg,#1b3a6e 0%,#2d5fa0 60%,#5b8dc4 100%);
+  --glogo: linear-gradient(120deg,#c9a84c 0%,#e8cb7a 30%,#5b8dc4 70%,#1b3a6e 100%);
+  --hbg: rgba(9,9,15,0.72);
+  --fh: 'Cormorant Garamond', serif;
+  --fb: 'Jost', sans-serif;
+  --shadow-color: rgba(212, 175, 55, 0.25);
+}
+
+body.theme-powder {
+  --bg: #fdf8f4;
+  --bg2: #fff9f6;
+  --text: #3b2820;
+  --text2: rgba(100,65,55,0.56);
+  --a1: #b8725a;
+  --a1b: #d49a82;
+  --a2: #8a4870;
+  --a2b: #b87898;
+  --a2c: #d8a8bc;
+  --danger: #c46070;
+  --gl: rgba(184,114,90,0.05);
+  --glb: rgba(184,114,90,0.20);
+  --gg: linear-gradient(135deg,#b8725a 0%,#d49a82 100%);
+  --gn: linear-gradient(135deg,#8a4870 0%,#b87898 100%);
+  --glogo: linear-gradient(120deg,#b8725a 0%,#d49a82 40%,#b87898 100%);
+  --hbg: rgba(253,248,244,0.84);
+  --shadow-color: rgba(184,114,90,0.25);
+}
+
+body.theme-azure {
+  --bg: #f0f5fb;
+  --bg2: #ffffff;
+  --text: #162038;
+  --text2: rgba(28,50,90,0.50);
+  --a1: #2a5298;
+  --a1b: #4a78c8;
+  --a2: #1a3a6e;
+  --a2b: #2d5fa0;
+  --a2c: #6898d0;
+  --danger: #3a6ab0;
+  --gl: rgba(42,82,152,0.05);
+  --glb: rgba(42,82,152,0.17);
+  --gg: linear-gradient(135deg,#2a5298 0%,#4a78c8 100%);
+  --gn: linear-gradient(135deg,#1a3a6e 0%,#2d5fa0 100%);
+  --glogo: linear-gradient(120deg,#2a5298 0%,#4a78c8 50%,#6898d0 100%);
+  --hbg: rgba(240,245,251,0.86);
+  --shadow-color: rgba(42,82,152,0.25);
+}
+
+/* 🎨 ПЛАВНЫЙ ПЕРЕХОД ВСЕХ ЦВЕТОВ */
+body, 
+body *,
+body::after,
+body::before,
+.glass,
+header,
+.hi,
+.logo,
+.nav a,
+.nav a::after,
+.vt,
+.vb,
+.fnb,
+.fnb *,
+.ts .tb,
+.blob,
+.card,
+.cinfo,
+.cname,
+.cprice,
+.ntag,
+.mscore,
+footer,
+.fc-col a,
+.sl a,
+.sl a i,
+.fb,
+.cbi,
+.fg input,
+.fg select,
+.fg textarea,
+.cimg,
+.cbadge,
+.hbtn,
+.modal .mi,
+.mname,
+.mbrand,
+.mprice,
+.mnote,
+.mfb,
+.mcb,
+.fp,
+.fph,
+.fi,
+.fico,
+.finf *,
+.frm,
+.hero h1 span,
+.hero p,
+.ornament,
+.stitle,
+.sbtn,
+input[type=range]::-webkit-slider-thumb,
+input[type=range],
+#bval,
+.bv span,
+.copy {
+  transition-property: background-color, background, border-color, color, box-shadow, transform, opacity, filter, backdrop-filter, -webkit-backdrop-filter, text-shadow, border-image;
+  transition-duration: 0.65s;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.blobs .blob {
+  transition: background 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.logo, .cprice, .mprice {
+  background-size: 300% 300% !important;
+  animation: gradientShift 12s ease infinite !important;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.glass {
+  transition: background-color 0.65s cubic-bezier(0.23, 1, 0.32, 1),
+              backdrop-filter 0.65s cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+body {
+  font-family: var(--fb);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+  transition: background 0.65s cubic-bezier(0.23, 1, 0.32, 1),
+              color 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9000;
+  opacity: .022;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  transition: opacity 0.65s ease;
+}
+
+.blobs { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.blob { position:absolute; border-radius:50%; filter:blur(90px); opacity:.10; animation:bf 18s ease-in-out infinite; transition:background 0.9s cubic-bezier(0.23,1,0.32,1); }
+.b1 { width:550px;height:550px;background:var(--a2);  top:-80px;right:-80px;  animation-delay:0s; }
+.b2 { width:450px;height:450px;background:var(--a1);  bottom:100px;left:-80px; animation-delay:-6s; }
+.b3 { width:350px;height:350px;background:var(--a2b); top:45%;left:42%;        animation-delay:-12s; }
+@keyframes bf {
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(25px,-35px) scale(1.06);}
+  66%{transform:translate(-18px,28px) scale(.94);}
+}
+
+.container { max-width:1380px; margin:0 auto; padding:0 32px; position:relative; z-index:1; }
+.glass { background:var(--gl); backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%); border:1px solid var(--glb); }
+
+/* 📱 МОБИЛЬНАЯ ВЕРСИЯ */
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  .hi { justify-content: center; flex-wrap: wrap; gap: 10px; }
+  .logo { font-size: 22px; letter-spacing: 4px; margin-right: auto; }
+  .hr { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+  .ts { gap: 6px; }
+  .tb { width: 30px; height: 30px; }
+  .fnb { padding: 6px 12px; }
+  .fnb span:not(.fc) { display: none; }
+  .hero { padding: 60px 0 40px; text-align: center; }
+  .hero h1 { font-size: clamp(42px, 12vw, 60px); }
+  .hero .l2 { font-size: clamp(28px, 8vw, 42px); }
+  .hero-sub { font-size: 13px; padding: 0 10px; }
+  .ss { padding: 24px 16px; border-radius: 20px; }
+  .stitle { font-size: 24px; flex-wrap: wrap; justify-content: center; text-align: center; }
+  .frow { grid-template-columns: 1fr; gap: 0; }
+  .fg textarea { min-height: 100px; }
+  .cbg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .cbi { padding: 8px 12px; font-size: 11px; justify-content: center; }
+  .grid { grid-template-columns: 1fr; gap: 16px; }
+  .cimg { height: 180px; }
+  .rh { flex-direction: column; align-items: stretch; gap: 12px; }
+  .rtitle { text-align: center; }
+  .fg-btns { justify-content: center; }
+  .fb { padding: 8px 16px; font-size: 10px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; text-align: center; }
+  .fc-col { text-align: center; }
+  .sl { justify-content: center; }
+  .copy { font-size: 10px; }
+  .mi { margin: 20px 16px; padding: 30px 20px; }
+  .mname { font-size: 36px; }
+  .mprice { font-size: 30px; }
+  .macts { flex-direction: column; gap: 10px; }
+  .fp { width: 100%; max-width: 100%; right: -100%; }
+  .fp.open { right: 0; }
+  .fph { padding: 20px; }
+  .fpb { padding: 16px; }
+  .fi { padding: 12px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 12px; }
+  .hi { padding: 10px 0; }
+  .logo { font-size: 18px; letter-spacing: 3px; }
+  .tb { width: 26px; height: 26px; }
+  .fnb { padding: 5px 10px; }
+  .fc { width: 16px; height: 16px; font-size: 9px; }
+  .hero h1 { font-size: 38px; }
+  .hero .l2 { font-size: 26px; }
+  .stitle { font-size: 20px; }
+  .cbg { grid-template-columns: 1fr; }
+  .cbi { justify-content: flex-start; }
+  .fg-btns { gap: 5px; }
+  .fb { padding: 6px 12px; font-size: 9px; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .mname { font-size: 28px; }
+  .mprice { font-size: 24px; }
+}
+
+body.mobile-view {
+  background: var(--bg) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+body.mobile-view header {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0;
+}
+
+body.mobile-view .pf {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  background: var(--bg);
+  border-radius: 0;
+}
+
+body.mobile-view .pf > .container {
+  padding: 0 15px;
+}
+
+.stitle, .rtitle, .hero h1, .hero p {
+  text-align: center;
+  justify-content: center;
+}
+
+.fg-btns, .ts, .hr {
+  justify-content: center;
+}
+
+.cbi, .fb, .fnb, .tb, .vb, .card, .fi {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cbi:active, .fb:active, .card:active {
+  transform: scale(0.98);
+  transition: transform 0.1s;
+}
+
+header {
+  position:sticky; top:0; z-index:100;
+  background:var(--hbg); backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  border-bottom:1px solid var(--glb);
+}
+.hi { display:flex; align-items:center; justify-content:space-between; padding:14px 28px; max-width:1380px; margin:0 auto; gap:14px; }
+.logo {
+  font-family:var(--fh); font-size:26px; font-weight:600; letter-spacing:6px; text-transform:uppercase;
+  background:var(--glogo); background-size:300%;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  cursor:default; user-select:none; flex-shrink:0;
+}
+.nav { display:flex; gap:32px; align-items:center; }
+.nav a {
+  color:var(--text2); text-decoration:none; font-size:11px; font-weight:500;
+  letter-spacing:2.5px; text-transform:uppercase; position:relative;
+}
+.nav a::after { content:''; position:absolute; bottom:-3px; left:0; width:0; height:1px; background:var(--a1); transition:width .3s; }
+.nav a:hover { color:var(--a1); }
+.nav a:hover::after { width:100%; }
+.hr { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+
+.vt { display:flex; background:var(--gl); border:1px solid var(--glb); border-radius:50px; padding:3px; gap:2px; }
+.vb { padding:6px 13px; border:none; background:transparent; color:var(--text2); border-radius:50px; font-size:11px; cursor:pointer; font-family:var(--fb); }
+.vb.active { background:var(--a1); color:#000; }
+.vb i { font-size:12px; }
+
+.fnb { display:flex; align-items:center; gap:7px; background:var(--gl); border:1px solid var(--glb); color:var(--text); padding:8px 16px; border-radius:50px; font-size:11px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; font-family:var(--fb); }
+.fnb:hover { border-color:var(--a1); color:var(--a1); }
+.fc { background:var(--a1); color:#000; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+.ts { display:flex; gap:9px; }
+.tb { width:34px; height:34px; border-radius:50%; border:2px solid var(--glb); cursor:pointer; flex-shrink:0; }
+.tb:hover { transform:scale(1.15); border-color:var(--a1); }
+.tb.active { border-color:var(--a1); box-shadow:0 0 10px var(--a1); }
+.t-dark   { background:conic-gradient(#09090f 33%,#c9a84c 33% 66%,#1b3a6e 66%); }
+.t-powder { background:conic-gradient(#fdf8f4 40%,#b8725a 40% 70%,#b87898 70%); }
+.t-azure  { background:conic-gradient(#f0f5fb 40%,#2a5298 40% 75%,#4a78c8 75%); }
+
+.hero { padding:110px 0 72px; text-align:center; position:relative; }
+.eyebrow { font-size:10px; font-weight:500; letter-spacing:5px; text-transform:uppercase; color:var(--a1); margin-bottom:24px; opacity:.8; }
+.hero h1 { font-family:var(--fh); font-size:clamp(54px,8vw,106px); font-weight:300; line-height:.92; margin-bottom:28px; }
+.l1 { display:block; color:var(--text); font-style:italic; }
+.l2 { display:block; font-weight:600; font-style:normal; letter-spacing:3px; font-size:clamp(36px,5vw,68px); background:var(--glogo); background-size:300%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-top:6px; }
+.hero-sub { font-size:14px; font-weight:300; color:var(--text2); letter-spacing:1.5px; max-width:500px; margin:0 auto; }
+
+.ornament { text-align:center; padding:28px 0; color:var(--a1); opacity:.35; font-size:18px; letter-spacing:18px; }
+
+.ss { border-radius:26px; padding:48px 48px 40px; margin-bottom:44px; }
+.stitle { font-family:var(--fh); font-size:30px; font-weight:400; color:var(--a1); letter-spacing:1px; margin-bottom:36px; display:flex; align-items:center; gap:12px; font-style:italic; }
+.stitle i { font-size:22px; opacity:.7; font-style:normal; }
+.frow { display:grid; grid-template-columns:2fr 1fr; gap:28px; margin-bottom:24px; }
+.fg { margin-bottom:22px; }
+.fg:last-child { margin-bottom:0; }
+.fg label { display:block; margin-bottom:9px; font-size:10px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:2.5px; }
+.fg input,.fg select,.fg textarea { width:100%; padding:13px 18px; background:var(--gl); border:1px solid var(--glb); border-radius:13px; font-size:14px; color:var(--text); font-family:var(--fb); font-weight:300; }
+.fg textarea { min-height:125px; resize:vertical; line-height:1.8; }
+.fg input:focus,.fg select:focus,.fg textarea:focus { outline:none; border-color:var(--a1); box-shadow:0 0 0 3px var(--glb); }
+.fg select option { background:#0e0e18; }
+body.theme-powder .fg select option { background:#fdf8f4; }
+body.theme-azure  .fg select option { background:#f0f5fb; }
+
+input[type=range] { -webkit-appearance:none; width:100%; height:3px; background:var(--glb); border-radius:2px; outline:none; border:none; padding:0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; background:var(--gg); border-radius:50%; cursor:pointer; border:3px solid var(--bg); box-shadow:0 0 10px var(--shadow-color); }
+.bv { display:flex; justify-content:space-between; margin-top:10px; color:var(--text2); font-size:11px; }
+#bval { color:var(--a1); font-weight:600; }
+
+.cbg { display:flex; flex-wrap:wrap; gap:9px; margin-top:11px; }
+.cbi { display:flex; align-items:center; gap:7px; cursor:pointer; padding:7px 16px; background:var(--gl); border:1px solid var(--glb); border-radius:50px; font-size:12px; font-weight:400; user-select:none; }
+.cbi:hover { border-color:var(--a1); color:var(--a1); }
+.cbi:has(input:checked) { border-color:var(--a1); background:var(--glb); color:var(--a1); }
+.cbi input { width:auto; accent-color:var(--a1); }
+
+.sbtn { background:var(--glogo); background-size:300%; color:#fff; border:none; padding:17px 38px; font-size:12px; font-weight:600; letter-spacing:3px; text-transform:uppercase; border-radius:50px; cursor:pointer; width:100%; margin-top:10px; font-family:var(--fb); position:relative; overflow:hidden; }
+.sbtn::before { content:''; position:absolute; inset:0; background:rgba(255,255,255,.14); opacity:0; transition:opacity .3s; }
+.sbtn:hover::before { opacity:1; }
+.sbtn:hover { transform:translateY(-2px); box-shadow:0 16px 44px var(--shadow-color); letter-spacing:4px; }
+
+.rs { border-radius:26px; padding:48px; }
+.rh { display:flex; justify-content:space-between; align-items:center; margin-bottom:36px; flex-wrap:wrap; gap:16px; }
+.rtitle { font-family:var(--fh); font-size:30px; font-weight:400; color:var(--a1); font-style:italic; }
+.fg-btns { display:flex; gap:9px; flex-wrap:wrap; }
+.fb { padding:8px 20px; background:var(--gl); border:1px solid var(--glb); color:var(--text2); border-radius:50px; cursor:pointer; font-size:11px; font-weight:500; letter-spacing:1px; font-family:var(--fb); }
+.fb.active { background:var(--a1); border-color:var(--a1); color:#000; }
+
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:26px; }
+.card { border-radius:20px; overflow:hidden; border:1px solid var(--glb); background:var(--gl); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); cursor:pointer; position:relative; animation:fu .5s ease both; }
+.card:hover { transform:translateY(-8px); border-color:var(--a1); box-shadow:0 24px 55px var(--shadow-color); }
+@keyframes fu { from{opacity:0;transform:translateY(22px);} to{opacity:1;transform:translateY(0);} }
+.cimg { height:210px; background:var(--gn); position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.cimg::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.45) 100%); }
+.cimg i { font-size:66px; color:rgba(255,255,255,.11); transition:transform .5s; position:relative; z-index:1; }
+.card:hover .cimg i { transform:scale(1.14) rotate(4deg); }
+.cbadge { position:absolute; top:14px; left:14px; z-index:2; background:rgba(0,0,0,.55); backdrop-filter:blur(8px); color:var(--a1b); padding:4px 12px; border-radius:50px; font-size:11px; font-weight:600; border:1px solid var(--glb); }
+.hbtn { position:absolute; top:12px; right:12px; z-index:3; width:34px; height:34px; border-radius:50%; background:rgba(0,0,0,.48); backdrop-filter:blur(8px); border:1px solid var(--glb); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; }
+.hbtn:hover { border-color:var(--danger); color:var(--danger); transform:scale(1.1); }
+.hbtn.on { background:rgba(196,122,110,.22); border-color:var(--danger); color:var(--danger); }
+.cinfo { padding:20px 22px; }
+.cname { font-family:var(--fh); font-size:21px; font-weight:600; color:var(--text); margin-bottom:3px; }
+.cbrand { font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--a1); margin-bottom:12px; }
+.cprice { font-size:22px; font-weight:600; margin-bottom:12px; background:var(--gg); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.cnotes { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:16px; }
+.ntag { background:rgba(201,168,76,.07); padding:3px 11px; border-radius:20px; font-size:10px; color:var(--text2); border:1px solid var(--glb); }
+.cfoot { display:flex; justify-content:space-between; align-items:center; }
+.mscore { font-size:10px; font-weight:600; color:var(--text2); letter-spacing:1px; text-transform:uppercase; }
+.mscore span { color:var(--a1b); }
+.empty { grid-column:1/-1; text-align:center; padding:80px 20px; color:var(--text2); }
+.empty i { font-size:46px; margin-bottom:18px; display:block; opacity:.22; }
+
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.72); backdrop-filter:blur(18px); z-index:500; overflow-y:auto; }
+.mi { background:var(--bg2); border:1px solid var(--glb); max-width:740px; margin:44px auto; border-radius:26px; padding:50px; position:relative; }
+.mx { position:absolute; top:20px; right:26px; font-size:24px; cursor:pointer; color:var(--text2); line-height:1; }
+.mx:hover { color:var(--a1); }
+.mname { font-family:var(--fh); font-size:50px; font-weight:300; font-style:italic; color:var(--text); line-height:1; margin-bottom:5px; }
+.mbrand { font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--a1); margin-bottom:24px; }
+.mprice { font-size:38px; font-weight:600; margin-bottom:32px; background:var(--gg); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.nb { margin-bottom:22px; }
+.nb h3 { font-size:9px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--text2); margin-bottom:12px; }
+.mn { display:flex; flex-wrap:wrap; gap:9px; }
+.mnote { background:var(--gl); border:1px solid var(--glb); padding:6px 16px; border-radius:50px; color:var(--text); font-size:12px; font-weight:300; }
+.macts { display:flex; gap:14px; margin-top:36px; }
+.mfb { flex:1; display:flex; align-items:center; justify-content:center; gap:9px; background:var(--gl); border:1px solid var(--glb); color:var(--text); padding:14px; border-radius:50px; font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; font-family:var(--fb); }
+.mfb.on { background:var(--glb); border-color:var(--danger); color:var(--danger); }
+.mcb { flex:1; background:transparent; border:1px solid var(--glb); color:var(--text2); padding:14px; border-radius:50px; font-size:12px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; font-family:var(--fb); }
+
+.ov { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:200; opacity:0; pointer-events:none; transition:opacity .4s; }
+.ov.on { opacity:1; pointer-events:all; }
+.fp { position:fixed; top:0; right:-420px; width:400px; height:100vh; background:var(--bg2); border-left:1px solid var(--glb); z-index:300; display:flex; flex-direction:column; transition:right .4s cubic-bezier(.23,1,.32,1),background .45s; }
+.fp.open { right:0; }
+.fph { padding:26px 26px 18px; border-bottom:1px solid var(--glb); display:flex; align-items:center; justify-content:space-between; }
+.fphtitle { font-family:var(--fh); font-size:26px; font-weight:400; font-style:italic; color:var(--a1); }
+.fphx { font-size:20px; cursor:pointer; color:var(--text2); }
+.fpb { flex:1; overflow-y:auto; padding:18px 24px; }
+.fe { text-align:center; padding:54px 16px; color:var(--text2); }
+.fe i { font-size:38px; margin-bottom:12px; display:block; opacity:.28; }
+.fi { display:flex; align-items:center; gap:14px; padding:14px; background:var(--gl); border:1px solid var(--glb); border-radius:14px; margin-bottom:10px; cursor:pointer; }
+.fi:hover { border-color:var(--a1); }
+.fico { width:48px; height:48px; border-radius:11px; background:var(--gn); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:20px; color:rgba(255,255,255,.18); }
+.finf { flex:1; min-width:0; }
+.finame { font-family:var(--fh); font-size:16px; font-weight:500; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.fibrand { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--a1); margin:2px 0 3px; }
+.fiprice { font-size:13px; font-weight:600; background:var(--gg); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.frm { color:var(--text2); cursor:pointer; font-size:13px; padding:5px; background:transparent; border:none; }
+
+footer { margin-top:90px; background:var(--bg2); border-top:1px solid var(--glb); padding:55px 0 26px; }
+.footer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:36px; margin-bottom:44px; }
+.fc-col h4 { font-family:var(--fh); color:var(--a1); margin-bottom:20px; font-size:17px; font-style:italic; }
+.fc-col ul { list-style:none; }
+.fc-col ul li { margin-bottom:9px; }
+.fc-col a { color:var(--text2); text-decoration:none; font-size:12px; font-weight:300; }
+.fc-col a:hover { color:var(--a1); }
+.sl { display:flex; gap:12px; }
+.sl a { width:36px; height:36px; background:var(--gl); border:1px solid var(--glb); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--text2); text-decoration:none; }
+.sl a:hover { border-color:var(--a1); color:var(--a1); transform:translateY(-2px); }
+.copy { text-align:center; padding-top:24px; border-top:1px solid var(--glb); color:var(--text2); font-size:11px; font-weight:300; letter-spacing:1px; }
+
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--glb);border-radius:3px;} ::-webkit-scrollbar-thumb:hover{background:var(--a1);}
+</style>
+</head>
+<body>
+
+<div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div class="ov" id="ov" onclick="closeFav()"></div>
+
+<!-- FAV PANEL -->
+<div class="fp" id="fp">
+  <div class="fph">
+    <div class="fphtitle">Избранное</div>
+    <span class="fphx" onclick="closeFav()"><i class="fas fa-times"></i></span>
+  </div>
+  <div class="fpb" id="fpb">
+    <div class="fe"><i class="far fa-heart"></i><p>Здесь будут ваши любимые ароматы</p></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="hi">
+    <div class="logo">Aromoire</div>
+    <nav class="nav">
+      <a href="#">Коллекции</a><a href="#">Бренды</a><a href="#">Ноты</a><a href="#">Стиль</a>
+    </nav>
+    <div class="hr">
+      <div class="vt">
+        <button class="vb active" id="bdsk" onclick="setView('desktop')"><i class="fas fa-desktop"></i></button>
+        <button class="vb" id="bmob" onclick="setView('mobile')"><i class="fas fa-mobile-alt"></i></button>
+      </div>
+      <button class="fnb" onclick="if(currentUser){openFav()}else{openAuthModal()}">
+        <i class="far fa-heart"></i><span>Избранное</span><span class="fc" id="fcount">0</span>
+      </button>
+      <div class="ts">
+        <div class="tb t-dark active" onclick="setTheme('dark',this)" title="Чёрное золото"></div>
+        <div class="tb t-powder" onclick="setTheme('powder',this)" title="Пудровая нежность"></div>
+        <div class="tb t-azure" onclick="setTheme('azure',this)" title="Лазурная свежесть"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- PHONE FRAME -->
+<div class="pf" id="pf">
+
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow">Ателье ароматических решений</p>
+    <h1><span class="l1">Искусство</span><span class="l2">Аромата</span></h1>
+    <p class="hero-sub">Опишите ваши ощущения -- мы найдём идеальный парфюм среди тысяч</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="ornament">· · ·</div>
+
+  <section class="ss glass">
+    <h2 class="stitle"><i class="fas fa-feather-alt"></i>Опишите желаемый аромат</h2>
+    <div class="frow">
+      <div class="fg">
+        <label>Ваши ощущения, воспоминания, образы</label>
+        <textarea id="sdesc" placeholder="Например: утренний морской бриз, кожаное кресло старой библиотеки, спелая вишня в шоколаде, первый снег на ветру..."></textarea>
+      </div>
+      <div>
+        <div class="fg">
+          <label>Бюджет (₽)</label>
+          <input type="range" id="brange" min="0" max="50000" step="1000" value="25000">
+          <div class="bv"><span>0 ₽</span><span id="bval">25 000 ₽</span><span>50 000+ ₽</span></div>
+        </div>
+        <div class="fg">
+          <label>Для кого</label>
+          <select id="gsel">
+            <option value="any">Унисекс / любой</option>
+            <option value="feminine">Женский</option>
+            <option value="masculine">Мужской</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="fg">
+      <label>Семейство ароматов</label>
+      <div class="cbg">
+        <label class="cbi"><input type="checkbox" value="цитрусовые"> Цитрусовые</label>
+        <label class="cbi"><input type="checkbox" value="цветочные"> Цветочные</label>
+        <label class="cbi"><input type="checkbox" value="древесные"> Древесные</label>
+        <label class="cbi"><input type="checkbox" value="восточные"> Восточные</label>
+        <label class="cbi"><input type="checkbox" value="гурманские"> Гурманские</label>
+        <label class="cbi"><input type="checkbox" value="кожаные"> Кожаные</label>
+        <label class="cbi"><input type="checkbox" value="пряные"> Пряные</label>
+        <label class="cbi"><input type="checkbox" value="акватические"> Акватические</label>
+        <label class="cbi"><input type="checkbox" value="фужерные"> Фужерные</label>
+        <label class="cbi"><input type="checkbox" value="мускусные"> Мускусные</label>
+        <label class="cbi"><input type="checkbox" value="шипровые"> Шипровые</label>
+      </div>
+    </div>
+    <button class="sbtn" onclick="doSearch()"><i class="fas fa-search" style="margin-right:9px"></i>Найти созвучие</button>
+  </section>
+
+  <section class="rs glass" id="rssec" style="display:none">
+    <div class="rh">
+      <h2 class="rtitle">Найденные ароматы</h2>
+      <div class="fg-btns">
+        <button class="fb active" onclick="applyF('all',this)">Все</button>
+        <button class="fb" onclick="applyF('low',this)">До 5 000 ₽</button>
+        <button class="fb" onclick="applyF('mid',this)">5 000–15 000 ₽</button>
+        <button class="fb" onclick="applyF('high',this)">От 15 000 ₽</button>
+      </div>
+    </div>
+    <div class="grid" id="pgrid"></div>
+  </section>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="fc-col"><h4>Aromoire</h4><ul><li><a href="#">О парфюмерном ателье</a></li><li><a href="#">Философия аромата</a></li><li><a href="#">Наши эксперты</a></li><li><a href="#">Карьера</a></li></ul></div>
+      <div class="fc-col"><h4>Коллекции</h4><ul><li><a href="#">Les Exclusifs</a></li><li><a href="#">Private Blends</a></li><li><a href="#">Atelier</a></li><li><a href="#">Limited Edition</a></li></ul></div>
+      <div class="fc-col"><h4>Помощь</h4><ul><li><a href="#">FAQ</a></li><li><a href="#">Доставка</a></li><li><a href="#">Проба ароматов</a></li><li><a href="#">Контакты</a></li></ul></div>
+      <div class="fc-col"><h4>Мы в сети</h4><div class="sl"><a href="#"><i class="fab fa-telegram"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-pinterest"></i></a><a href="#"><i class="fab fa-vk"></i></a></div></div>
+    </div>
+    <div class="copy">© 2025 Aromoire · Ателье парфюмерных решений</div>
+  </div>
+</footer>
+
+</div><!-- /pf -->
+
+<!-- МОДАЛКА АВТОРИЗАЦИИ -->
+<div class="modal" id="authModal">
+  <div class="mi" style="max-width: 400px;">
+    <span class="mx" onclick="closeAuthModal()">&times;</span>
+    <div style="text-align: center; padding: 20px;">
+      <h2 class="stitle" style="margin-bottom: 20px;">Вход в Aromoire</h2>
+      
+      <div class="fg">
+        <input type="email" id="email" placeholder="Email" style="margin-bottom: 10px;">
+      </div>
+      <div class="fg">
+        <input type="password" id="password" placeholder="Пароль" style="margin-bottom: 20px;">
+      </div>
+      
+      <button class="sbtn" onclick="signIn()" style="margin-bottom: 10px;">Войти</button>
+      <button class="sbtn" onclick="signUp()" style="background: var(--gn);">Регистрация</button>
+      
+      <div style="margin-top: 20px; color: var(--text2);" id="authMessage"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="mi">
+    <span class="mx" onclick="closeMod()">&times;</span>
+    <div id="mc"></div>
+  </div>
+</div>
+
+<script>
+// ========== ИНИЦИАЛИЗАЦИЯ SUPABASE ==========
+// 🔴 ЗАМЕНИ ЭТИ ДАННЫЕ НА СВОИ ИЗ SUPABASE
+const SUPABASE_URL = 'https://db.wsqmobuxtmpguflyvydv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_yrvujTtCmCBxhXQvsrK9EQ_IJwZBq3S';
+const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ========== ДАННЫЕ ПАРФЮМОВ ==========
+var DB = [
+  {id:1,n:"Black Orchid",b:"Tom Ford",pv:18500,pr:"high",g:"unisex",top:["трюфель","чёрная смородина","бергамот"],heart:["орхидея","иланг-иланг","жасмин"],base:["уд","пачули","ладан"],fam:["восточные","цветочные","пряные"],dsc:["чувственный","тёмный","роскошный","вечерний"]},
+  {id:2,n:"Light Blue",b:"Dolce & Gabbana",pv:6800,pr:"mid",g:"feminine",top:["лимон","яблоко","кедр"],heart:["бамбук","жасмин","белая роза"],base:["амбра","мускус","кедр"],fam:["цитрусовые","цветочные","древесные"],dsc:["свежий","фруктовый","лёгкий","летний"]},
+  {id:3,n:"Tobacco Vanille",b:"Tom Ford",pv:22000,pr:"high",g:"masculine",top:["табак","фрукты","специи"],heart:["ваниль","какао","бобы тонка"],base:["древесные ноты","сухофрукты"],fam:["гурманские","пряные"],dsc:["табачный","сладкий","уютный","зимний"]},
+  {id:4,n:"Acqua di Giò",b:"Giorgio Armani",pv:8500,pr:"mid",g:"masculine",top:["бергамот","нероли","мандарин"],heart:["жасмин","цикламен","фрезия"],base:["белый мускус","кедр","пачули"],fam:["цитрусовые","акватические","древесные"],dsc:["свежий","морской","элегантный"]},
+  {id:5,n:"La Vie Est Belle",b:"Lancôme",pv:7200,pr:"mid",g:"feminine",top:["чёрная смородина","груша"],heart:["ирис","жасмин","апельсиновый цвет"],base:["пачули","пралине","ваниль"],fam:["гурманские","цветочные"],dsc:["сладкий","цветочный","праздничный"]},
+  {id:6,n:"Oud Wood",b:"Tom Ford",pv:25000,pr:"high",g:"unisex",top:["уд","сандал","бергамот"],heart:["кардамон","корица","перец"],base:["амбра","ваниль","ладан"],fam:["древесные","восточные","пряные"],dsc:["благородный","древесный","дымный"]},
+  {id:7,n:"Bleu de Chanel",b:"Chanel",pv:9800,pr:"mid",g:"masculine",top:["грейпфрут","лимон","мята"],heart:["имбирь","мускатный орех","жасмин"],base:["кедр","ладан","сандал"],fam:["древесные","цитрусовые","пряные"],dsc:["свежий","элегантный","современный"]},
+  {id:8,n:"Chance Eau Tendre",b:"Chanel",pv:9200,pr:"mid",g:"feminine",top:["грейпфрут","кивано"],heart:["жасмин","иланг-иланг"],base:["амбра","мускус","пачули"],fam:["цитрусовые","цветочные","мускусные"],dsc:["нежный","свежий","цветочный","романтичный"]},
+  {id:9,n:"N°5 L'Eau",b:"Chanel",pv:11500,pr:"mid",g:"feminine",top:["альдегиды","иланг-иланг","нероли"],heart:["роза","жасмин","лилия"],base:["ветивер","сандал","амбра"],fam:["цветочные","мускусные"],dsc:["классический","цветочный","изысканный"]},
+  {id:10,n:"Sauvage EDP",b:"Dior",pv:10500,pr:"mid",g:"masculine",top:["бергамот","перец"],heart:["лаванда","ветивер","амброксан"],base:["гуайяк","кедр","лабданум"],fam:["древесные","пряные","фужерные"],dsc:["свежий","мужественный","дикий"]},
+  {id:11,n:"J'adore",b:"Dior",pv:8800,pr:"mid",g:"feminine",top:["груша","дыня","магнолия"],heart:["дамасская роза","жасмин","орхидея"],base:["мускус","черника","амбра"],fam:["цветочные","фруктовые"],dsc:["женственный","цветочный","роскошный"]},
+  {id:12,n:"Miss Dior Blooming Bouquet",b:"Dior",pv:7800,pr:"mid",g:"feminine",top:["мандарин","клубника"],heart:["пион","дамасская роза"],base:["белый мускус"],fam:["цветочные","фруктовые"],dsc:["нежный","свежий","романтичный"]},
+  {id:13,n:"Aventus",b:"Creed",pv:32000,pr:"high",g:"masculine",top:["ананас","бергамот","чёрная смородина","яблоко"],heart:["берёза","пачули","жасмин","роза"],base:["мускус","дубовый мох","амбра","ваниль"],fam:["фруктовые","древесные","мускусные"],dsc:["харизматичный","фруктовый","дымный","королевский"]},
+  {id:14,n:"Silver Mountain Water",b:"Creed",pv:28000,pr:"high",g:"unisex",top:["бергамот","мандарин","зелёный чай"],heart:["смородина","нектарин"],base:["мускус","сандал","кашмиран"],fam:["акватические","цитрусовые","фужерные"],dsc:["свежий","горный","кристальный"]},
+  {id:15,n:"La Nuit de l'Homme",b:"Yves Saint Laurent",pv:5900,pr:"mid",g:"masculine",top:["кардамон","бергамот"],heart:["лаванда","кедр","цветок каркаде"],base:["пачули","ветивер","мускус"],fam:["восточные","пряные","фужерные"],dsc:["соблазнительный","ночной","чувственный"]},
+  {id:16,n:"Black Opium",b:"Yves Saint Laurent",pv:6500,pr:"mid",g:"feminine",top:["розовый перец","мандарин","груша"],heart:["кофе","жасмин","ваниль"],base:["пачули","белый мускус","кедр"],fam:["гурманские","цветочные","восточные"],dsc:["кофейный","сладкий","дерзкий","ночной"]},
+  {id:17,n:"Libre",b:"Yves Saint Laurent",pv:7100,pr:"mid",g:"feminine",top:["мандарин","лаванда"],heart:["жасмин","апельсиновый цвет"],base:["амбра","ваниль","мускус"],fam:["цветочные","восточные","фужерные"],dsc:["свободный","современный","цветочный"]},
+  {id:18,n:"Flowerbomb",b:"Viktor & Rolf",pv:8900,pr:"mid",g:"feminine",top:["бергамот","чай","османтус"],heart:["жасмин","роза","орхидея","фрезия"],base:["пачули","мускус","амбра"],fam:["цветочные","восточные","гурманские"],dsc:["взрывной","цветочный","сладкий","женственный"]},
+  {id:19,n:"Spicebomb Extreme",b:"Viktor & Rolf",pv:7600,pr:"mid",g:"masculine",top:["перец","шафран"],heart:["лаванда","ваниль"],base:["смола","ветивер","табак"],fam:["пряные","восточные","древесные"],dsc:["пряный","сладкий","мужественный"]},
+  {id:20,n:"Coco Mademoiselle",b:"Chanel",pv:10200,pr:"mid",g:"feminine",top:["апельсин","грейпфрут","бергамот"],heart:["роза","жасмин"],base:["пачули","ваниль","белый мускус","ветивер"],fam:["цветочные","древесные","восточные"],dsc:["элегантный","цветочный","шармантный"]}
+];
+
+var curF='all', curR=[], favs=[], curV='desktop', currentUser = null, currentPerfumeId = null;
+try{ favs=JSON.parse(localStorage.getItem('aromoire_favs')||'[]'); }catch(e){ favs=[]; }
+
+function saveFavs(){ try{ localStorage.setItem('aromoire_favs',JSON.stringify(favs)); }catch(e){} updFC(); renderFP(); }
+function isFav(id){ for(var i=0;i<favs.length;i++){ if(favs[i].id===id) return true; } return false; }
+function updFC(){ document.getElementById('fcount').textContent=favs.length; }
+
+// ========== АВТОРИЗАЦИЯ ==========
+async function checkSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    updateUIForUser();
+    loadFavoritesFromDB();
+  }
+}
+
+function updateUIForUser() {
+  const authBtn = document.querySelector('.fnb');
+  if (currentUser) {
+    authBtn.innerHTML = `<i class="fas fa-user"></i><span>${currentUser.email.split('@')[0]}</span><span class="fc">${favs.length}</span>`;
+  } else {
+    authBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i><span>Войти</span><span class="fc">0</span>`;
+  }
+}
+
+async function signUp() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password
+  });
+  
+  if (error) {
+    document.getElementById('authMessage').textContent = 'Ошибка: ' + error.message;
+  } else {
+    document.getElementById('authMessage').textContent = 'Проверьте почту для подтверждения';
+  }
+}
+
+async function signIn() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+  
+  if (error) {
+    document.getElementById('authMessage').textContent = 'Ошибка: ' + error.message;
+  } else {
+    currentUser = data.user;
+    closeAuthModal();
+    updateUIForUser();
+    loadFavoritesFromDB();
+  }
+}
+
+async function signOut() {
+  if (currentUser) {
+    await supabase.auth.signOut();
+    currentUser = null;
+    favs = [];
+    updateUIForUser();
+    renderGrid(curR);
+  }
+}
+
+async function loadFavoritesFromDB() {
+  if (!currentUser) return;
+  
+  const { data, error } = await supabase
+    .from('favorites')
+    .select('perfume_id')
+    .eq('user_id', currentUser.id);
+  
+  if (data) {
+    favs = data.map(f => DB.find(p => p.id === f.perfume_id)).filter(f => f);
+    saveFavs();
+    renderGrid(curR);
+  }
+}
+
+async function toggleFav(id, e) {
+  if (e) e.stopPropagation();
+  
+  if (!currentUser) {
+    openAuthModal();
+    return;
+  }
+  
+  const isFavorite = isFav(id);
+  
+  if (isFavorite) {
+    await supabase
+      .from('favorites')
+      .delete()
+      .eq('user_id', currentUser.id)
+      .eq('perfume_id', id);
+      
+    favs = favs.filter(f => f.id !== id);
+  } else {
+    await supabase
+      .from('favorites')
+      .insert([{ user_id: currentUser.id, perfume_id: id }]);
+      
+    const perfume = DB.find(p => p.id === id);
+    if (perfume) favs.push(perfume);
+  }
+  
+  saveFavs();
+  updateUIForUser();
+  renderGrid(curR);
+}
+
+function openAuthModal() {
+  document.getElementById('authModal').style.display = 'block';
+}
+
+function closeAuthModal() {
+  document.getElementById('authModal').style.display = 'none';
+}
+
+// ========== КОММЕНТАРИИ ==========
+async function loadComments(perfumeId) {
+  if (!document.getElementById('commentsSection')) return;
+  
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*, users:user_id (email)')
+    .eq('perfume_id', perfumeId)
+    .order('created_at', { ascending: false });
+  
+  if (data) {
+    let html = '';
+    data.forEach(comment => {
+      html += `
+        <div style="padding: 10px; border-bottom: 1px solid var(--glb); margin-bottom: 10px;">
+          <div style="font-size: 11px; color: var(--a1);">${comment.users.email}</div>
+          <div style="font-size: 14px;">${comment.content}</div>
+          <div style="font-size: 10px; color: var(--text2);">${new Date(comment.created_at).toLocaleString()}</div>
+        </div>
+      `;
+    });
+    document.getElementById('commentsSection').innerHTML = data.length ? html : '<p style="color: var(--text2); text-align: center;">Пока нет комментариев. Будьте первым!</p>';
+  }
+}
+
+async function addComment() {
+  if (!currentUser) {
+    openAuthModal();
+    return;
+  }
+  
+  const comment = document.getElementById('commentInput').value;
+  if (!comment.trim()) return;
+  
+  const { data, error } = await supabase
+    .from('comments')
+    .insert([{
+      user_id: currentUser.id,
+      perfume_id: currentPerfumeId,
+      content: comment
+    }]);
+  
+  if (!error) {
+    document.getElementById('commentInput').value = '';
+    loadComments(currentPerfumeId);
+  }
+}
+
+// ========== ФУНКЦИИ ИНТЕРФЕЙСА ==========
+function renderFP(){
+  var b=document.getElementById('fpb');
+  if(!favs.length){ b.innerHTML='<div class="fe"><i class="far fa-heart"></i><p>Здесь будут ваши любимые ароматы</p></div>'; return; }
+  var h='';
+  for(var i=0;i<favs.length;i++){
+    var p=favs[i];
+    h+='<div class="fi" onclick="showD('+p.id+');closeFav();">';
+    h+='<div class="fico"><i class="fas fa-flask"></i></div>';
+    h+='<div class="finf"><div class="finame">'+p.n+'</div><div class="fibrand">'+p.b+'</div><div class="fiprice">'+p.pv.toLocaleString('ru')+' ₽</div></div>';
+    h+='<button class="frm" onclick="event.stopPropagation();rmFav('+p.id+')" title="Убрать"><i class="fas fa-times"></i></button>';
+    h+='</div>';
+  }
+  b.innerHTML=h;
+}
+
+function rmFav(id){ var nf=[]; for(var i=0;i<favs.length;i++){ if(favs[i].id!==id) nf.push(favs[i]); } favs=nf; saveFavs(); renderGrid(curR); }
+function openFav(){ document.getElementById('fp').classList.add('open'); document.getElementById('ov').classList.add('on'); renderFP(); }
+function closeFav(){ document.getElementById('fp').classList.remove('open'); document.getElementById('ov').classList.remove('on'); }
+
+function setTheme(t,btn){
+  document.body.classList.remove('theme-powder','theme-azure');
+  if(t==='powder') document.body.classList.add('theme-powder');
+  if(t==='azure') document.body.classList.add('theme-azure');
+  var btns=document.querySelectorAll('.tb');
+  for(var i=0;i<btns.length;i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+}
+
+function setView(v){
+  curV=v;
+  if(v==='mobile') document.body.classList.add('mobile-view');
+  else document.body.classList.remove('mobile-view');
+  document.getElementById('bdsk').classList.toggle('active',v==='desktop');
+  document.getElementById('bmob').classList.toggle('active',v==='mobile');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.getElementById('brange').addEventListener('input',function(){
+  document.getElementById('bval').textContent=parseInt(this.value).toLocaleString('ru')+' ₽';
+});
+
+var KW={
+  свежий:['свежий','лёгкий','легкий','чистый','утро','роса','прохлада'],
+  морской:['море','морской','океан','бриз','соль','пляж','вода'],
+  сладкий:['сладкий','ваниль','карамель','мёд','мед','шоколад','конфет','выпечка'],
+  древесный:['дерево','древесный','кедр','сандал','лес','бамбук'],
+  цветочный:['цветы','цветочный','роза','жасмин','лаванда','пион','орхидея','магнолия'],
+  цитрусовый:['цитрус','лимон','апельсин','бергамот','грейпфрут','мандарин'],
+  пряный:['пряный','корица','перец','кардамон','имбирь','специи'],
+  табачный:['табак','дымный','дым','виски','сигара'],
+  кожаный:['кожа','кожаный','замша'],
+  восточный:['восточный','ладан','амбра','уд'],
+  гурманский:['гурман','десерт','выпечка','кофе','шоколад','молоко'],
+  уютный:['уютный','тёплый','теплый','домашний','плед','мягкий'],
+  романтичный:['романтик','романтичный','нежный']
+};
+
+function analyze(t){
+  t=t.toLowerCase(); var r=[];
+  for(var k in KW){ var ws=KW[k]; for(var i=0;i<ws.length;i++){ if(t.indexOf(ws[i])!==-1){r.push(k);break;} } }
+  return r;
+}
+
+function calcScore(p,t,fams,gen,budget){
+  var s=44;
+  if(t){
+    var kw=analyze(t);
+    for(var i=0;i<kw.length;i++){
+      for(var j=0;j<p.dsc.length;j++){ if(p.dsc[j]===kw[i]) s+=15; }
+      for(var j=0;j<p.fam.length;j++){ if(p.fam[j]===kw[i]) s+=10; }
+    }
+    var all=p.top.concat(p.heart).concat(p.base);
+    var ws=t.toLowerCase().split(/\s+/);
+    for(var i=0;i<ws.length;i++){
+      var w=ws[i]; if(w.length>3){ for(var j=0;j<all.length;j++){ var nn=all[j].toLowerCase(); if(nn.indexOf(w)!==-1||w.indexOf(nn.slice(0,4))!==-1){s+=17;break;} } }
+    }
+  }
+  if(fams.length){ for(var i=0;i<fams.length;i++){ for(var j=0;j<p.fam.length;j++){ if(p.fam[j]===fams[i]){s+=12;break;} } } }
+  if(gen!=='any'){ if(p.g===gen) s+=12; else if(p.g==='unisex') s+=5; else s-=10; }
+  if(p.pv<=budget) s+=5; else s-=14;
+  return Math.min(100,Math.max(0,s));
+}
+
+function doSearch(){
+  var t=document.getElementById('sdesc').value.trim();
+  var budget=parseInt(document.getElementById('brange').value);
+  var gen=document.getElementById('gsel').value;
+  var cbx=document.querySelectorAll('.cbg input:checked');
+  var fams=[]; for(var i=0;i<cbx.length;i++) fams.push(cbx[i].value);
+  var scored=[];
+  for(var i=0;i<DB.length;i++){
+    var sc=calcScore(DB[i],t,fams,gen,budget);
+    if(sc>27){ var c={}; for(var k in DB[i]) c[k]=DB[i][k]; c.score=sc; scored.push(c); }
+  }
+  scored.sort(function(a,b){return b.score-a.score;});
+  curR=scored; curF='all';
+  var fbs=document.querySelectorAll('.fb'); for(var i=0;i<fbs.length;i++) fbs[i].classList.remove('active'); fbs[0].classList.add('active');
+  renderGrid(curR);
+  var rs=document.getElementById('rssec'); rs.style.display='block';
+  rs.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderGrid(results){
+  var grid=document.getElementById('pgrid');
+  var list=curF==='all'?results:results.filter(function(p){return p.pr===curF;});
+  if(!list.length){ grid.innerHTML='<div class="empty"><i class="fas fa-wind"></i><p>Ароматы не найдены. Попробуйте изменить параметры.</p></div>'; return; }
+  var h='';
+  for(var i=0;i<list.length;i++){
+    var p=list[i]; var fav=isFav(p.id); var d=(i*0.055)+'s';
+    h+='<div class="card" style="animation-delay:'+d+'" onclick="showD('+p.id+')">';
+    h+='<div class="cimg"><i class="fas fa-flask"></i>';
+    h+='<span class="cbadge">'+p.score+'%</span>';
+    h+='<button class="hbtn'+(fav?' on':'')+'" data-id="'+p.id+'" onclick="toggleFav('+p.id+',event)"><i class="'+(fav?'fas':'far')+' fa-heart"></i></button>';
+    h+='</div>';
+    h+='<div class="cinfo">';
+    h+='<div class="cname">'+p.n+'</div><div class="cbrand">'+p.b+'</div>';
+    h+='<div class="cprice">'+p.pv.toLocaleString('ru')+'&nbsp;₽</div>';
+    h+='<div class="cnotes">'; var tn=p.top.slice(0,3); for(var j=0;j<tn.length;j++) h+='<span class="ntag">'+tn[j]+'</span>'; h+='</div>';
+    h+='<div class="cfoot"><span class="mscore">совпадение <span>'+p.score+'%</span></span><i class="fas fa-chevron-right" style="color:var(--a1);opacity:.4;font-size:10px"></i></div>';
+    h+='</div></div>';
+  }
+  grid.innerHTML=h;
+}
+
+function applyF(r,btn){
+  curF=r;
+  var fbs=document.querySelectorAll('.fb'); for(var i=0;i<fbs.length;i++) fbs[i].classList.remove('active');
+  btn.classList.add('active');
+  renderGrid(curR);
+}
+
+function showD(id){
+  var p=null;
+  for(var i=0;i<DB.length;i++){ if(DB[i].id===id){p=DB[i];break;} }
+  if(!p){ for(var i=0;i<curR.length;i++){ if(curR[i].id===id){p=curR[i];break;} } }
+  if(!p) return;
+  
+  currentPerfumeId = id;
+  var fav=isFav(id);
+  
+  function ntags(a){ var s=''; for(var i=0;i<a.length;i++) s+='<span class="mnote">'+a[i]+'</span>'; return s; }
+  
+  var h='';
+  h+='<div class="mname">'+p.n+'</div>';
+  h+='<div class="mbrand">'+p.b+'</div>';
+  h+='<div class="mprice">'+p.pv.toLocaleString('ru')+'&nbsp;₽</div>';
+  h+='<div class="nb"><h3>Верхние ноты</h3><div class="mn">'+ntags(p.top)+'</div></div>';
+  h+='<div class="nb"><h3>Сердце аромата</h3><div class="mn">'+ntags(p.heart)+'</div></div>';
+  h+='<div class="nb"><h3>Базовые ноты</h3><div class="mn">'+ntags(p.base)+'</div></div>';
+  h+='<div class="nb"><h3>Семейство</h3><div class="mn">'+ntags(p.fam)+'</div></div>';
+  h+='<div class="macts">';
+  h+='<button class="mfb'+(fav?' on':'')+'" id="mfb" data-id="'+id+'" onclick="toggleFav('+id+')">';
+  h+='<i class="'+(fav?'fas':'far')+' fa-heart"></i> '+(fav?'В избранном':'В избранное')+'</button>';
+  h+='<button class="mcb" onclick="closeMod()">Закрыть</button>';
+  h+='</div>';
+  
+  // Комментарии
+  h+='<div class="nb" style="margin-top: 30px;">';
+  h+='  <h3>Обсуждение аромата</h3>';
+  h+='  <div id="commentsSection" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"></div>';
+  h+='  <div style="display: flex; gap: 10px; margin-top: 15px;">';
+  h+='    <input type="text" id="commentInput" placeholder="Ваш комментарий..." style="flex: 1; padding: 10px; border-radius: 50px; border: 1px solid var(--glb); background: var(--gl); color: var(--text);">';
+  h+='    <button onclick="addComment()" style="background: var(--a1); border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; color: #000; font-weight: 600;">Отправить</button>';
+  h+='  </div>';
+  h+='</div>';
+  
+  document.getElementById('mc').innerHTML = h;
+  document.getElementById('modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  
+  loadComments(id);
+}
+
+function closeMod(){ document.getElementById('modal').style.display='none'; document.body.style.overflow=''; }
+window.addEventListener('click',function(e){ if(e.target===document.getElementById('modal')) closeMod(); });
+
+// Запуск
+checkSession();
+updFC();
+</script>
+</body>
+</html>
