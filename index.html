@@ -493,14 +493,22 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
   <div class="mi auth-modal-inner">
     <span class="mx" onclick="closeAuthModal()">&times;</span>
     <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Вход в Aromoire</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Войти</button>
-      <button class="auth-tab" id="tabReg" onclick="switchTab('reg')">Регистрация</button>
+
+    <!-- Шаг 1: ввод email -->
+    <div id="authStep1">
+      <div class="auth-field"><input type="email" id="authEmail" placeholder="Ваш Email"></div>
+      <div class="auth-msg" id="authMsg"></div>
+      <button class="auth-action-btn" onclick="sendOtp()">Получить код</button>
     </div>
-    <div class="auth-field"><input type="email" id="authEmail" placeholder="Email"></div>
-    <div class="auth-field"><input type="password" id="authPass" placeholder="Пароль"></div>
-    <div class="auth-msg" id="authMsg"></div>
-    <button class="auth-action-btn" id="authActionBtn" onclick="doAuth()">Войти</button>
+
+    <!-- Шаг 2: ввод кода -->
+    <div id="authStep2" style="display:none">
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;">Код отправлен на <span id="authEmailShow" style="color:var(--a1)"></span></p>
+      <div class="auth-field"><input type="text" id="authOtp" placeholder="Введите код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
+      <div class="auth-msg" id="authMsg2"></div>
+      <button class="auth-action-btn" onclick="verifyOtp()">Войти</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;" onclick="backToEmail()">← Изменить email</p>
+    </div>
   </div>
 </div>
 
@@ -643,16 +651,11 @@ function onAuthBtnClick() {
 /* ═══════════════════════════════════════════════════
    AUTH MODAL
 ═══════════════════════════════════════════════════ */
-function switchTab(tab) {
-  curAuthTab = tab;
-  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
-  document.getElementById('tabReg').classList.toggle('active', tab==='reg');
-  document.getElementById('authActionBtn').textContent = tab==='login' ? 'Войти' : 'Зарегистрироваться';
-  document.getElementById('authMsg').textContent = '';
-  document.getElementById('authMsg').className = 'auth-msg';
-}
-
 function openAuthModal() {
+  document.getElementById('authStep1').style.display = 'block';
+  document.getElementById('authStep2').style.display = 'none';
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authOtp') && (document.getElementById('authOtp').value = '');
   document.getElementById('authModal').style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
@@ -661,38 +664,53 @@ function closeAuthModal() {
   document.body.style.overflow = '';
 }
 
-function doAuth() {
+function sendOtp() {
   var email = document.getElementById('authEmail').value.trim();
-  var pass  = document.getElementById('authPass').value;
-  var msg   = document.getElementById('authMsg');
-
-  if (!email || !pass) { showMsg('Заполните email и пароль', 'err'); return; }
+  if (!email) { showMsg('Введите email', 'err'); return; }
   if (!sb) { showMsg('Сервис недоступен', 'err'); return; }
+  showMsg('Отправляем код...', '');
+  sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true } })
+    .then(function(res) {
+      if (res.error) { showMsg('Ошибка: ' + res.error.message, 'err'); }
+      else {
+        document.getElementById('authEmailShow').textContent = email;
+        document.getElementById('authStep1').style.display = 'none';
+        document.getElementById('authStep2').style.display = 'block';
+      }
+    }).catch(function(){ showMsg('Ошибка соединения', 'err'); });
+}
 
-  showMsg('Подождите...', '');
+function verifyOtp() {
+  var email = document.getElementById('authEmail').value.trim();
+  var token = document.getElementById('authOtp').value.trim();
+  if (!token) { showMsg2('Введите код', 'err'); return; }
+  showMsg2('Проверяем...', '');
+  sb.auth.verifyOtp({ email: email, token: token, type: 'email' })
+    .then(function(res) {
+      if (res.error) { showMsg2('Неверный код', 'err'); }
+      else {
+        currentUser = res.data.user;
+        closeAuthModal();
+        updateHeaderUI();
+        loadFavsFromDB();
+      }
+    }).catch(function(){ showMsg2('Ошибка соединения', 'err'); });
+}
 
-  if (curAuthTab === 'login') {
-    sb.auth.signInWithPassword({ email: email, password: pass })
-      .then(function(res) {
-        if (res.error) { showMsg('Ошибка: ' + res.error.message, 'err'); }
-        else {
-          currentUser = res.data.user;
-          closeAuthModal();
-          updateHeaderUI();
-          loadFavsFromDB();
-        }
-      }).catch(function(e){ showMsg('Ошибка соединения', 'err'); });
-  } else {
-    sb.auth.signUp({ email: email, password: pass })
-      .then(function(res) {
-        if (res.error) { showMsg('Ошибка: ' + res.error.message, 'err'); }
-        else { showMsg('Проверьте почту для подтверждения!', 'ok'); }
-      }).catch(function(e){ showMsg('Ошибка соединения', 'err'); });
-  }
+function backToEmail() {
+  document.getElementById('authStep1').style.display = 'block';
+  document.getElementById('authStep2').style.display = 'none';
+  document.getElementById('authOtp').value = '';
 }
 
 function showMsg(text, type) {
   var el = document.getElementById('authMsg');
+  el.textContent = text;
+  el.className = 'auth-msg' + (type ? ' ' + type : '');
+}
+
+function showMsg2(text, type) {
+  var el = document.getElementById('authMsg2');
   el.textContent = text;
   el.className = 'auth-msg' + (type ? ' ' + type : '');
 }
