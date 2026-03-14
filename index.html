@@ -654,10 +654,13 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
         <button class="vb active" id="bdsk" onclick="setView('desktop')"><i class="fas fa-desktop"></i></button>
         <button class="vb" id="bmob" onclick="setView('mobile')"><i class="fas fa-mobile-alt"></i></button>
       </div>
-      <button class="fnb" id="authBtn" onclick="onAuthBtnClick()">
-        <i class="far fa-heart" id="authBtnIcon"></i>
-        <span id="authBtnLabel">Войти</span>
+      <button class="fnb" id="favBtn" onclick="openFav()">
+        <i class="far fa-heart"></i>
         <span class="fc" id="fcount">0</span>
+      </button>
+      <button class="fnb" id="authBtn" onclick="onAuthBtnClick()">
+        <i class="far fa-user" id="authBtnIcon"></i>
+        <span id="authBtnLabel">Войти</span>
       </button>
       <div class="ts">
         <div class="tb t-dark active" onclick="setTheme('dark',this)" title="Чёрное золото"></div>
@@ -897,7 +900,7 @@ function updateHeaderUI(username) {
     label.textContent = name;
     btn.classList.add('auth-user-btn');
   } else {
-    icon.className = 'far fa-heart';
+    icon.className = 'far fa-user';
     label.textContent = 'Войти';
     btn.classList.remove('auth-user-btn');
   }
@@ -905,11 +908,7 @@ function updateHeaderUI(username) {
 }
 
 function onAuthBtnClick() {
-  if (currentUser) {
-    openFav();
-  } else {
-    openAuthModal();
-  }
+  openAuthModal();
 }
 
 /* ═══════════════════════════════════════════════════
