@@ -754,30 +754,6 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
 </footer>
 </div><!-- /pf -->
 
-<!-- AUTH MODAL -->
-<div class="modal" id="authModal">
-  <div class="mi auth-modal-inner">
-    <span class="mx" onclick="closeAuthModal()">&times;</span>
-    <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Вход в Aromoire</div>
-
-    <!-- Шаг 1: ввод email -->
-    <div id="authStep1">
-      <div class="auth-field"><input type="email" id="authEmail" placeholder="Ваш Email"></div>
-      <div class="auth-msg" id="authMsg"></div>
-      <button class="auth-action-btn" onclick="sendOtp()">Получить код</button>
-    </div>
-
-    <!-- Шаг 2: ввод кода -->
-    <div id="authStep2" style="display:none">
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;">Код отправлен на <span id="authEmailShow" style="color:var(--a1)"></span></p>
-      <div class="auth-field"><input type="text" id="authOtp" placeholder="Введите код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
-      <div class="auth-msg" id="authMsg2"></div>
-      <button class="auth-action-btn" onclick="verifyOtp()">Войти</button>
-      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;" onclick="backToEmail()">← Изменить email</p>
-    </div>
-  </div>
-</div>
-
 <!-- PERFUME MODAL -->
 <div class="modal" id="modal">
   <div class="mi">
