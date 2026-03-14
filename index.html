@@ -447,11 +447,188 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--glb);border-radius:3px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--a1);}
+/* ═══════ GUEST WARNING TOAST ═══════ */
+.guest-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  z-index: 9999;
+  width: min(480px, calc(100vw - 40px));
+  background: var(--bg2);
+  border: 1px solid var(--glb);
+  border-radius: 20px;
+  padding: 24px 28px;
+  backdrop-filter: blur(28px);
+  box-shadow: 0 24px 64px rgba(0,0,0,.45);
+  transition: transform .6s cubic-bezier(.23,1,.32,1), opacity .6s ease;
+  opacity: 0;
+}
+.guest-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.guest-toast-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.guest-toast-title {
+  font-family: var(--fh);
+  font-size: 22px;
+  font-weight: 600;
+  font-style: italic;
+  background: var(--glogo);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+.guest-toast-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--glb);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all .3s;
+  flex-shrink: 0;
+}
+.guest-toast-close:hover { border-color: var(--a1); color: var(--a1); }
+.guest-toast-text {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+  font-weight: 300;
+}
+.guest-toast-text strong { color: var(--text); font-weight: 500; }
+.guest-toast-bar {
+  height: 2px;
+  background: var(--glb);
+  border-radius: 2px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+.guest-toast-progress {
+  height: 100%;
+  background: var(--gg);
+  border-radius: 2px;
+  width: 100%;
+  transform-origin: left;
+  animation: toastProgress 25s linear forwards;
+}
+@keyframes toastProgress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* ═══════ FAV PANEL — AUTH BLOCK ═══════ */
+.fav-auth-block {
+  padding: 20px;
+  background: var(--gl);
+  border: 1px solid var(--glb);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.fav-auth-block p {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.fav-auth-btns { display: flex; gap: 8px; flex-direction: column; }
+.fav-auth-btn {
+  padding: 10px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--fb);
+  transition: all .3s;
+  border: 1px solid var(--glb);
+}
+.fav-auth-btn.primary {
+  background: var(--gg);
+  color: #000;
+  border-color: transparent;
+}
+.fav-auth-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px var(--sc); }
+.fav-auth-btn.secondary { background: transparent; color: var(--text2); }
+.fav-auth-btn.secondary:hover { border-color: var(--a1); color: var(--a1); }
+.fav-auth-btn.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+.fav-auth-btn.danger:hover { background: rgba(196,122,110,.1); }
+
+.fav-user-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--gl);
+  border: 1px solid var(--glb);
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+.fav-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--gg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: #000;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-family: var(--fh);
+}
+.fav-user-info { flex: 1; min-width: 0; }
+.fav-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fav-user-email {
+  font-size: 10px;
+  color: var(--text2);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
 </head>
 <body>
 
 <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<!-- GUEST WARNING TOAST -->
+<div class="guest-toast" id="guestToast">
+  <div class="guest-toast-header">
+    <span class="guest-toast-title">Внимание!</span>
+    <button class="guest-toast-close" onclick="hideGuestToast()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="guest-toast-text">
+    Вы добавляете ароматы в избранное в <strong>гостевом режиме</strong>.<br><br>
+    Обратите внимание: данные хранятся только в памяти вашего браузера и <strong>могут исчезнуть</strong> при закрытии вкладки, очистке кэша или смене устройства.<br><br>
+    Чтобы сохранить коллекцию навсегда — <span style="color:var(--a1);cursor:pointer;text-decoration:underline;" onclick="hideGuestToast();openAuthModal();">войдите в аккаунт</span>.
+  </div>
+  <div class="guest-toast-bar">
+    <div class="guest-toast-progress" id="guestToastProgress"></div>
+  </div>
+</div>
 <div class="ov" id="ov" onclick="closeFav()"></div>
 
 <!-- FAV PANEL -->
@@ -958,26 +1135,45 @@ function loadFavsFromDB() {
 
 function toggleFav(id, e) {
   if (e) e.stopPropagation();
-  if (!currentUser) { openAuthModal(); return; }
+  if (!currentUser) {
+    showGuestToast();
+  } else {
+    // синхронизируем с БД только для авторизованных
+    var wasFav = isFav(id);
+    if (wasFav) {
+      sb.from('favorites').delete().eq('user_id',currentUser.id).eq('perfume_id',id).then(function(){}).catch(function(){});
+    } else {
+      sb.from('favorites').insert([{user_id:currentUser.id,perfume_id:id}]).then(function(){}).catch(function(){});
+    }
+  }
 
   var p = null;
   for(var i=0;i<DB.length;i++){ if(DB[i].id===id){p=DB[i];break;} }
   if (!p) return;
 
   var wasFav = isFav(id);
-
   if (wasFav) {
     var nf = [];
     for(var i=0;i<favs.length;i++){ if(favs[i].id!==id) nf.push(favs[i]); }
     favs = nf;
-    if (sb) sb.from('favorites').delete().eq('user_id',currentUser.id).eq('perfume_id',id).then(function(){}).catch(function(){});
   } else {
     favs.push(p);
-    if (sb) sb.from('favorites').insert([{user_id:currentUser.id,perfume_id:id}]).then(function(){}).catch(function(){});
   }
 
   saveFavs();
   updFC();
+
+  var btn = document.querySelector('.hbtn[data-id="'+id+'"]');
+  if (btn) {
+    if (isFav(id)) { btn.classList.add('on'); btn.innerHTML='<i class="fas fa-heart"></i>'; }
+    else { btn.classList.remove('on'); btn.innerHTML='<i class="far fa-heart"></i>'; }
+  }
+  var mbtn = document.getElementById('mfb');
+  if (mbtn && parseInt(mbtn.getAttribute('data-id'))===id) {
+    if (isFav(id)) { mbtn.classList.add('on'); mbtn.innerHTML='<i class="fas fa-heart"></i> В избранном'; }
+    else { mbtn.classList.remove('on'); mbtn.innerHTML='<i class="far fa-heart"></i> В избранное'; }
+  }
+}
 
   // обновить кнопку на карточке
   var btn = document.querySelector('.hbtn[data-id="'+id+'"]');
@@ -996,20 +1192,68 @@ function toggleFav(id, e) {
 function renderFP() {
   var b = document.getElementById('fpb');
   if (!b) return;
+  var header = '';
+  if (currentUser) {
+    // Показываем блок пользователя с кнопкой выхода
+    var uname = document.getElementById('authBtnLabel') ? document.getElementById('authBtnLabel').textContent : 'Аккаунт';
+    var email = currentUser.email || '';
+    var letter = uname.charAt(0).toUpperCase();
+    header = '<div class="fav-user-block">'
+      + '<div class="fav-user-avatar">'+letter+'</div>'
+      + '<div class="fav-user-info"><div class="fav-user-name">'+uname+'</div><div class="fav-user-email">'+email+'</div></div>'
+      + '</div>'
+      + '<div style="margin-bottom:12px;">'
+      + '<button class="fav-auth-btn danger" style="width:100%" onclick="doSignOut()"><i class="fas fa-sign-out-alt" style="margin-right:6px"></i>Выйти из аккаунта</button>'
+      + '</div>';
+  } else {
+    // Гостевой блок
+    header = '<div class="fav-auth-block">'
+      + '<p>Войдите в аккаунт, чтобы сохранить избранное навсегда и получить доступ с любого устройства.</p>'
+      + '<div class="fav-auth-btns">'
+      + '<button class="fav-auth-btn primary" onclick="closeFav();openAuthModal();"><i class="fas fa-sign-in-alt" style="margin-right:6px"></i>Войти / Зарегистрироваться</button>'
+      + '<button class="fav-auth-btn secondary" onclick="stayAsGuest()"><i class="fas fa-user-secret" style="margin-right:6px"></i>Остаться как Гость</button>'
+      + '</div>'
+      + '</div>';
+  }
+  var list = '';
   if (!favs.length) {
-    b.innerHTML = '<div class="fe"><i class="far fa-heart"></i><p>Здесь будут ваши любимые ароматы</p></div>';
-    return;
+    list = '<div class="fe"><i class="far fa-heart"></i><p>Здесь будут ваши любимые ароматы</p></div>';
+  } else {
+    for (var i = 0; i < favs.length; i++) {
+      var p = favs[i];
+      list += '<div class="fi" onclick="showD('+p.id+');closeFav();">';
+      list += '<div class="fico"><i class="fas fa-flask"></i></div>';
+      list += '<div class="finf"><div class="finame">'+p.n+'</div><div class="fibrand">'+p.b+'</div><div class="fiprice">'+p.pv.toLocaleString('ru')+' ₽</div></div>';
+      list += '<button class="frm" onclick="event.stopPropagation();rmFav('+p.id+')" title="Убрать"><i class="fas fa-times"></i></button>';
+      list += '</div>';
+    }
   }
-  var h = '';
-  for(var i=0;i<favs.length;i++){
-    var p=favs[i];
-    h+='<div class="fi" onclick="showD('+p.id+');closeFav();">';
-    h+='<div class="fico"><i class="fas fa-flask"></i></div>';
-    h+='<div class="finf"><div class="finame">'+p.n+'</div><div class="fibrand">'+p.b+'</div><div class="fiprice">'+p.pv.toLocaleString('ru')+' ₽</div></div>';
-    h+='<button class="frm" onclick="event.stopPropagation();rmFav('+p.id+')" title="Убрать"><i class="fas fa-times"></i></button>';
-    h+='</div>';
-  }
-  b.innerHTML = h;
+  b.innerHTML = header + list;
+}
+function stayAsGuest() {
+  // Просто закрываем панель, пользователь остаётся гостем
+  // Предупреждение уже показано при первом добавлении в избранное
+  closeFav();
+}
+/* ═══════ GUEST TOAST ═══════ */
+var guestToastShown = false;
+function showGuestToast() {
+  if (guestToastShown) return;
+  try { if (localStorage.getItem('aromoire_guest_warned')) return; } catch(e){}
+  guestToastShown = true;
+  try { localStorage.setItem('aromoire_guest_warned', '1'); } catch(e){}
+  var toast = document.getElementById('guestToast');
+  if (!toast) return;
+  toast.classList.add('show');
+  var timer = setTimeout(function() { hideGuestToast(); }, 25000);
+  toast._timer = timer;
+}
+function hideGuestToast() {
+  var toast = document.getElementById('guestToast');
+  if (!toast) return;
+  if (toast._timer) clearTimeout(toast._timer);
+  toast.classList.remove('show');
+
 }
 
 function rmFav(id) {
@@ -1019,8 +1263,15 @@ function rmFav(id) {
   if (sb && currentUser) sb.from('favorites').delete().eq('user_id',currentUser.id).eq('perfume_id',id).then(function(){}).catch(function(){});
 }
 
-function openFav()  { document.getElementById('fp').classList.add('open'); document.getElementById('ov').classList.add('on'); renderFP(); }
-function closeFav() { document.getElementById('fp').classList.remove('open'); document.getElementById('ov').classList.remove('on'); }
+function openFav() {
+  document.getElementById('fp').classList.add('open');
+  document.getElementById('ov').classList.add('on');
+  renderFP();
+}
+function closeFav() {
+  document.getElementById('fp').classList.remove('open');
+  document.getElementById('ov').classList.remove('on');
+}
 
 /* ═══════════════════════════════════════════════════
    THEME & VIEW
