@@ -871,9 +871,9 @@ function initSupabase() {
   sb.auth.getSession().then(function(res) {
     if (res.data && res.data.session) {
       currentUser = res.data.session.user;
-      sb.from('profiles').select('username').eq('id', currentUser.id).single()
+      sb.from('profiles').select('username').eq('id', currentUser.id).maybeSingle()
         .then(function(p) {
-          updateHeaderUI(p.data ? p.data.username : null);
+          updateHeaderUI(p && p.data ? p.data.username : null);
           loadFavsFromDB();
         }).catch(function() {
           updateHeaderUI(null);
