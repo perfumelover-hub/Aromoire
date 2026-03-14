@@ -301,21 +301,107 @@ body.theme-azure .cbi:has(input:checked){background:rgba(42,82,152,.10);}
   .fp.open{right:0;}
 }
 
-/* ═══════ AUTH MODAL ═══════ */
-.auth-modal-inner{max-width:420px;text-align:center;}
-.auth-tabs{display:flex;gap:0;margin-bottom:28px;background:var(--gl);border-radius:50px;padding:3px;}
-.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--text2);border-radius:50px;cursor:pointer;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:all .3s;}
-.auth-tab.active{background:var(--a1);color:#000;}
-.auth-field{margin-bottom:14px;}
-.auth-field input{width:100%;padding:13px 18px;background:var(--gl);border:1px solid var(--glb);border-radius:13px;font-size:14px;color:var(--text);font-family:var(--fb);}
-.auth-field input:focus{outline:none;border-color:var(--a1);}
-.auth-msg{font-size:13px;color:var(--text2);margin:12px 0;min-height:20px;font-style:italic;}
-.auth-msg.err{color:#e05050;}
-.auth-msg.ok{color:#50c050;}
-.auth-action-btn{background:var(--glogo);background-size:300%;color:#fff;border:none;padding:14px;width:100%;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:var(--fb);transition:all .3s;margin-top:6px;}
-.auth-action-btn:hover{transform:translateY(-1px);box-shadow:0 10px 30px var(--sc);}
-.logout-btn{background:transparent;border:1px solid var(--glb);color:var(--text2);padding:7px 14px;border-radius:50px;cursor:pointer;font-family:var(--fb);font-size:11px;transition:all .3s;}
-.logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+<!-- AUTH MODAL -->
+<div class="modal" id="authModal">
+  <div class="mi auth-modal-inner">
+    <span class="mx" onclick="closeAuthModal()">&times;</span>
+
+    <!-- ВХОД -->
+    <div id="flowLogin" style="display:block">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Вход в Aromoire</div>
+      <div class="auth-field"><input type="email" id="loginEmail" placeholder="Email"></div>
+      <div class="auth-field" style="position:relative">
+        <input type="password" id="loginPass" placeholder="Пароль">
+      </div>
+      <div class="auth-msg" id="loginMsg"></div>
+      <button class="auth-action-btn" onclick="doLogin()">Войти</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('forgotFlow')">Забыл пароль?</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--text2);text-align:center;">Нет аккаунта? <span style="color:var(--a1);cursor:pointer;" onclick="showFlow('regFlow1')">Зарегистрироваться</span></p>
+    </div>
+
+    <!-- ВХОД: 2FA код -->
+    <div id="flowLogin2fa" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Подтверждение входа</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Код отправлен на вашу почту</p>
+      <div class="auth-field"><input type="text" id="login2faCode" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
+      <div class="auth-msg" id="login2faMsg"></div>
+      <button class="auth-action-btn" onclick="doLogin2fa()">Подтвердить</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('flowLogin')">← Назад</p>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 1 — email -->
+    <div id="regFlow1" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 1 из 4 — Введите ваш Email</p>
+      <div class="auth-field"><input type="email" id="regEmail" placeholder="Email"></div>
+      <div class="auth-msg" id="reg1Msg"></div>
+      <button class="auth-action-btn" onclick="regSendOtp()">Получить код</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);text-align:center;">Уже есть аккаунт? <span style="color:var(--a1);cursor:pointer;" onclick="showFlow('flowLogin')">Войти</span></p>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 2 — OTP -->
+    <div id="regFlow2" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 2 из 4 — Код отправлен на <span id="regEmailShow" style="color:var(--a1)"></span></p>
+      <div class="auth-field"><input type="text" id="regOtp" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
+      <div class="auth-msg" id="reg2Msg"></div>
+      <button class="auth-action-btn" onclick="regVerifyOtp()">Подтвердить</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('regFlow1')">← Изменить email</p>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 3 — пароль -->
+    <div id="regFlow3" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 3 из 4 — Придумайте пароль</p>
+      <div class="auth-field"><input type="password" id="regPass1" placeholder="Пароль (минимум 6 символов)"></div>
+      <div class="auth-field"><input type="password" id="regPass2" placeholder="Повторите пароль"></div>
+      <div class="auth-msg" id="reg3Msg"></div>
+      <button class="auth-action-btn" onclick="regSetPassword()">Далее</button>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 4 — никнейм + 2FA -->
+    <div id="regFlow4" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 4 из 4 — Последние штрихи</p>
+      <div class="auth-field"><input type="text" id="regUsername" placeholder="Никнейм" maxlength="24"></div>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin:16px 0;color:var(--text2);font-size:13px;">
+        <input type="checkbox" id="reg2fa" style="width:auto;accent-color:var(--a1);">
+        Включить двухфакторную аутентификацию (код на email при каждом входе)
+      </label>
+      <div class="auth-msg" id="reg4Msg"></div>
+      <button class="auth-action-btn" onclick="regFinish()">Завершить регистрацию</button>
+    </div>
+
+    <!-- ВОССТАНОВЛЕНИЕ ПАРОЛЯ: шаг 1 — email -->
+    <div id="forgotFlow" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Восстановление</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Введите email — пришлём код для сброса пароля</p>
+      <div class="auth-field"><input type="email" id="forgotEmail" placeholder="Email"></div>
+      <div class="auth-msg" id="forgot1Msg"></div>
+      <button class="auth-action-btn" onclick="forgotSendOtp()">Отправить код</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('flowLogin')">← Назад</p>
+    </div>
+
+    <!-- ВОССТАНОВЛЕНИЕ: шаг 2 — OTP -->
+    <div id="forgotFlow2" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Восстановление</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Код отправлен на <span id="forgotEmailShow" style="color:var(--a1)"></span></p>
+      <div class="auth-field"><input type="text" id="forgotOtp" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
+      <div class="auth-msg" id="forgot2Msg"></div>
+      <button class="auth-action-btn" onclick="forgotVerifyOtp()">Подтвердить</button>
+    </div>
+
+    <!-- ВОССТАНОВЛЕНИЕ: шаг 3 — новый пароль -->
+    <div id="forgotFlow3" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Новый пароль</div>
+      <div class="auth-field"><input type="password" id="forgotPass1" placeholder="Новый пароль"></div>
+      <div class="auth-field"><input type="password" id="forgotPass2" placeholder="Повторите пароль"></div>
+      <div class="auth-msg" id="forgot3Msg"></div>
+      <button class="auth-action-btn" onclick="forgotSetPassword()">Сохранить пароль</button>
+    </div>
+
+  </div>
+</div>
 
 /* ═══════ MOBILE VIEW SIMULATION ═══════ */
 .pf{display:contents;}
@@ -605,8 +691,11 @@ function initSupabase() {
   sb.auth.getSession().then(function(res) {
     if (res.data && res.data.session) {
       currentUser = res.data.session.user;
-      updateHeaderUI();
-      loadFavsFromDB();
+      sb.from('profiles').select('username').eq('id', currentUser.id).single()
+        .then(function(p) {
+          updateHeaderUI(p.data ? p.data.username : null);
+          loadFavsFromDB();
+        });
     }
   }).catch(function(){});
 
@@ -614,21 +703,19 @@ function initSupabase() {
     if (session) {
       currentUser = session.user;
     } else {
-      currentUser = null;
-      favs = [];
+      currentUser = null; favs = [];
     }
-    updateHeaderUI();
     updFC();
   });
 }
 
-function updateHeaderUI() {
-  var btn = document.getElementById('authBtn');
-  var icon = document.getElementById('authBtnIcon');
+function updateHeaderUI(username) {
+  var btn   = document.getElementById('authBtn');
+  var icon  = document.getElementById('authBtnIcon');
   var label = document.getElementById('authBtnLabel');
   if (!btn) return;
   if (currentUser) {
-    var name = currentUser.email ? currentUser.email.split('@')[0] : 'Аккаунт';
+    var name = username || (currentUser.email ? currentUser.email.split('@')[0] : 'Аккаунт');
     icon.className = 'fas fa-user';
     label.textContent = name;
     btn.classList.add('auth-user-btn');
@@ -651,11 +738,20 @@ function onAuthBtnClick() {
 /* ═══════════════════════════════════════════════════
    AUTH MODAL
 ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   AUTH FLOWS
+═══════════════════════════════════════════════════ */
+var regTempUser = null;
+
+function showFlow(id) {
+  var flows = ['flowLogin','flowLogin2fa','regFlow1','regFlow2','regFlow3','regFlow4','forgotFlow','forgotFlow2','forgotFlow3'];
+  for (var i = 0; i < flows.length; i++)
+    document.getElementById(flows[i]).style.display = 'none';
+  document.getElementById(id).style.display = 'block';
+}
+
 function openAuthModal() {
-  document.getElementById('authStep1').style.display = 'block';
-  document.getElementById('authStep2').style.display = 'none';
-  document.getElementById('authEmail').value = '';
-  document.getElementById('authOtp') && (document.getElementById('authOtp').value = '');
+  showFlow('flowLogin');
   document.getElementById('authModal').style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
@@ -664,53 +760,153 @@ function closeAuthModal() {
   document.body.style.overflow = '';
 }
 
-function sendOtp() {
-  var email = document.getElementById('authEmail').value.trim();
-  if (!email) { showMsg('Введите email', 'err'); return; }
-  if (!sb) { showMsg('Сервис недоступен', 'err'); return; }
-  showMsg('Отправляем код...', '');
-  sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true } })
+/* --- ВХОД --- */
+function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { authMsg('loginMsg','Введите email и пароль','err'); return; }
+  authMsg('loginMsg','Входим...','');
+  sb.auth.signInWithPassword({ email: email, password: pass })
     .then(function(res) {
-      if (res.error) { showMsg('Ошибка: ' + res.error.message, 'err'); }
-      else {
-        document.getElementById('authEmailShow').textContent = email;
-        document.getElementById('authStep1').style.display = 'none';
-        document.getElementById('authStep2').style.display = 'block';
-      }
-    }).catch(function(){ showMsg('Ошибка соединения', 'err'); });
+      if (res.error) { authMsg('loginMsg','Ошибка: ' + res.error.message,'err'); return; }
+      currentUser = res.data.user;
+      // Проверяем 2FA
+      sb.from('profiles').select('two_fa_enabled,username').eq('id', currentUser.id).single()
+        .then(function(p) {
+          if (p.data && p.data.two_fa_enabled) {
+            // Отправляем OTP для 2FA
+            sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false } })
+              .then(function() { showFlow('flowLogin2fa'); })
+              .catch(function() { authMsg('loginMsg','Ошибка отправки кода','err'); });
+          } else {
+            finishLogin(p.data);
+          }
+        });
+    }).catch(function(){ authMsg('loginMsg','Ошибка соединения','err'); });
 }
 
-function verifyOtp() {
-  var email = document.getElementById('authEmail').value.trim();
-  var token = document.getElementById('authOtp').value.trim();
-  if (!token) { showMsg2('Введите код', 'err'); return; }
-  showMsg2('Проверяем...', '');
+function doLogin2fa() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var token = document.getElementById('login2faCode').value.trim();
+  if (!token) { authMsg('login2faMsg','Введите код','err'); return; }
+  authMsg('login2faMsg','Проверяем...','');
   sb.auth.verifyOtp({ email: email, token: token, type: 'email' })
     .then(function(res) {
-      if (res.error) { showMsg2('Неверный код', 'err'); }
-      else {
-        currentUser = res.data.user;
-        closeAuthModal();
-        updateHeaderUI();
-        loadFavsFromDB();
+      if (res.error) { authMsg('login2faMsg','Неверный код','err'); return; }
+      currentUser = res.data.user;
+      sb.from('profiles').select('username').eq('id', currentUser.id).single()
+        .then(function(p) { finishLogin(p.data); });
+    }).catch(function(){ authMsg('login2faMsg','Ошибка соединения','err'); });
+}
+
+function finishLogin(profile) {
+  closeAuthModal();
+  updateHeaderUI(profile ? profile.username : null);
+  loadFavsFromDB();
+}
+
+/* --- РЕГИСТРАЦИЯ --- */
+function regSendOtp() {
+  var email = document.getElementById('regEmail').value.trim();
+  if (!email) { authMsg('reg1Msg','Введите email','err'); return; }
+  authMsg('reg1Msg','Отправляем код...','');
+  sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true } })
+    .then(function(res) {
+      if (res.error) { authMsg('reg1Msg','Ошибка: ' + res.error.message,'err'); return; }
+      document.getElementById('regEmailShow').textContent = email;
+      showFlow('regFlow2');
+    }).catch(function(){ authMsg('reg1Msg','Ошибка соединения','err'); });
+}
+
+function regVerifyOtp() {
+  var email = document.getElementById('regEmail').value.trim();
+  var token = document.getElementById('regOtp').value.trim();
+  if (!token) { authMsg('reg2Msg','Введите код','err'); return; }
+  authMsg('reg2Msg','Проверяем...','');
+  sb.auth.verifyOtp({ email: email, token: token, type: 'email' })
+    .then(function(res) {
+      if (res.error) { authMsg('reg2Msg','Неверный код','err'); return; }
+      regTempUser = res.data.user;
+      showFlow('regFlow3');
+    }).catch(function(){ authMsg('reg2Msg','Ошибка соединения','err'); });
+}
+
+function regSetPassword() {
+  var p1 = document.getElementById('regPass1').value;
+  var p2 = document.getElementById('regPass2').value;
+  if (!p1 || p1.length < 6) { authMsg('reg3Msg','Минимум 6 символов','err'); return; }
+  if (p1 !== p2) { authMsg('reg3Msg','Пароли не совпадают','err'); return; }
+  authMsg('reg3Msg','Сохраняем...','');
+  sb.auth.updateUser({ password: p1 })
+    .then(function(res) {
+      if (res.error) { authMsg('reg3Msg','Ошибка: ' + res.error.message,'err'); return; }
+      showFlow('regFlow4');
+    }).catch(function(){ authMsg('reg3Msg','Ошибка соединения','err'); });
+}
+
+function regFinish() {
+  var username = document.getElementById('regUsername').value.trim();
+  var twofa   = document.getElementById('reg2fa').checked;
+  if (!username) { authMsg('reg4Msg','Введите никнейм','err'); return; }
+  if (username.length < 3) { authMsg('reg4Msg','Минимум 3 символа','err'); return; }
+  authMsg('reg4Msg','Сохраняем...','');
+  sb.from('profiles').insert([{ id: regTempUser.id, username: username, two_fa_enabled: twofa }])
+    .then(function(res) {
+      if (res.error) {
+        if (res.error.code === '23505') { authMsg('reg4Msg','Этот никнейм уже занят','err'); }
+        else { authMsg('reg4Msg','Ошибка: ' + res.error.message,'err'); }
+        return;
       }
-    }).catch(function(){ showMsg2('Ошибка соединения', 'err'); });
+      currentUser = regTempUser;
+      closeAuthModal();
+      updateHeaderUI(username);
+      loadFavsFromDB();
+    }).catch(function(){ authMsg('reg4Msg','Ошибка соединения','err'); });
 }
 
-function backToEmail() {
-  document.getElementById('authStep1').style.display = 'block';
-  document.getElementById('authStep2').style.display = 'none';
-  document.getElementById('authOtp').value = '';
+/* --- ВОССТАНОВЛЕНИЕ ПАРОЛЯ --- */
+function forgotSendOtp() {
+  var email = document.getElementById('forgotEmail').value.trim();
+  if (!email) { authMsg('forgot1Msg','Введите email','err'); return; }
+  authMsg('forgot1Msg','Отправляем код...','');
+  sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false } })
+    .then(function(res) {
+      if (res.error) { authMsg('forgot1Msg','Email не найден или ошибка','err'); return; }
+      document.getElementById('forgotEmailShow').textContent = email;
+      showFlow('forgotFlow2');
+    }).catch(function(){ authMsg('forgot1Msg','Ошибка соединения','err'); });
 }
 
-function showMsg(text, type) {
-  var el = document.getElementById('authMsg');
-  el.textContent = text;
-  el.className = 'auth-msg' + (type ? ' ' + type : '');
+function forgotVerifyOtp() {
+  var email = document.getElementById('forgotEmail').value.trim();
+  var token = document.getElementById('forgotOtp').value.trim();
+  if (!token) { authMsg('forgot2Msg','Введите код','err'); return; }
+  authMsg('forgot2Msg','Проверяем...','');
+  sb.auth.verifyOtp({ email: email, token: token, type: 'email' })
+    .then(function(res) {
+      if (res.error) { authMsg('forgot2Msg','Неверный код','err'); return; }
+      showFlow('forgotFlow3');
+    }).catch(function(){ authMsg('forgot2Msg','Ошибка соединения','err'); });
 }
 
-function showMsg2(text, type) {
-  var el = document.getElementById('authMsg2');
+function forgotSetPassword() {
+  var p1 = document.getElementById('forgotPass1').value;
+  var p2 = document.getElementById('forgotPass2').value;
+  if (!p1 || p1.length < 6) { authMsg('forgot3Msg','Минимум 6 символов','err'); return; }
+  if (p1 !== p2) { authMsg('forgot3Msg','Пароли не совпадают','err'); return; }
+  authMsg('forgot3Msg','Сохраняем...','');
+  sb.auth.updateUser({ password: p1 })
+    .then(function(res) {
+      if (res.error) { authMsg('forgot3Msg','Ошибка: ' + res.error.message,'err'); return; }
+      authMsg('forgot3Msg','Пароль изменён! Войдите заново.','ok');
+      setTimeout(function(){ showFlow('flowLogin'); }, 2000);
+    }).catch(function(){ authMsg('forgot3Msg','Ошибка соединения','err'); });
+}
+
+/* --- УТИЛИТЫ --- */
+function authMsg(elId, text, type) {
+  var el = document.getElementById(elId);
+  if (!el) return;
   el.textContent = text;
   el.className = 'auth-msg' + (type ? ' ' + type : '');
 }
@@ -719,7 +915,7 @@ function doSignOut() {
   if (!sb || !currentUser) return;
   sb.auth.signOut().then(function() {
     currentUser = null; favs = [];
-    saveFavs(); updateHeaderUI(); renderGrid(curR);
+    saveFavs(); updateHeaderUI(null); renderGrid(curR);
   });
 }
 
