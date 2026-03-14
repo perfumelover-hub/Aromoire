@@ -1174,20 +1174,6 @@ function toggleFav(id, e) {
   }
 }
 
-  // обновить кнопку на карточке
-  var btn = document.querySelector('.hbtn[data-id="'+id+'"]');
-  if (btn) {
-    if (isFav(id)) { btn.classList.add('on'); btn.innerHTML='<i class="fas fa-heart"></i>'; }
-    else { btn.classList.remove('on'); btn.innerHTML='<i class="far fa-heart"></i>'; }
-  }
-  // обновить кнопку в модалке
-  var mbtn = document.getElementById('mfb');
-  if (mbtn && parseInt(mbtn.getAttribute('data-id'))===id) {
-    if (isFav(id)) { mbtn.classList.add('on'); mbtn.innerHTML='<i class="fas fa-heart"></i> В избранном'; }
-    else { mbtn.classList.remove('on'); mbtn.innerHTML='<i class="far fa-heart"></i> В избранное'; }
-  }
-}
-
 function renderFP() {
   var b = document.getElementById('fpb');
   if (!b) return;
