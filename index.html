@@ -875,6 +875,9 @@ function initSupabase() {
         .then(function(p) {
           updateHeaderUI(p.data ? p.data.username : null);
           loadFavsFromDB();
+        }).catch(function() {
+          updateHeaderUI(null);
+          loadFavsFromDB();
         });
     }
   }).catch(function(){});
