@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aromoire · изысканный подбор парфюма</title>
 <link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#c9a84c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -256,6 +256,17 @@ body.theme-azure .cbi:has(input:checked){background:rgba(42,82,152,.10);}
   .macts{flex-direction:column;gap:10px;}
 }
 
+/* ═══════ AUTH MODAL ═══════ */
+.auth-modal-inner{max-width:480px;}
+.auth-field{margin-bottom:14px;}
+.auth-field input{width:100%;padding:13px 18px;background:var(--gl);border:1px solid var(--glb);border-radius:13px;font-size:14px;color:var(--text);font-family:var(--fb);transition:all .3s;}
+.auth-field input:focus{outline:none;border-color:var(--a1);box-shadow:0 0 0 3px rgba(201,168,76,.10);}
+.auth-action-btn{width:100%;padding:15px;background:var(--gg);border:none;border-radius:50px;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:var(--fb);color:#000;margin-top:8px;transition:all .3s;}
+.auth-action-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px var(--sc);}
+.auth-msg{font-size:12px;min-height:18px;margin:6px 0;color:var(--text2);}
+.auth-msg.err{color:var(--danger);}
+.auth-msg.ok{color:#6dbf7e;}
+
 /* ═══════ COMMENTS ═══════ */
 .comments-area{margin-top:30px;border-top:1px solid var(--glb);padding-top:24px;}
 .comments-area h3{font-size:9px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--text2);margin-bottom:16px;}
@@ -301,108 +312,6 @@ body.theme-azure .cbi:has(input:checked){background:rgba(42,82,152,.10);}
   .fp.open{right:0;}
 }
 
-<!-- AUTH MODAL -->
-<div class="modal" id="authModal">
-  <div class="mi auth-modal-inner">
-    <span class="mx" onclick="closeAuthModal()">&times;</span>
-
-    <!-- ВХОД -->
-    <div id="flowLogin" style="display:block">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Вход в Aromoire</div>
-      <div class="auth-field"><input type="email" id="loginEmail" placeholder="Email"></div>
-      <div class="auth-field" style="position:relative">
-        <input type="password" id="loginPass" placeholder="Пароль">
-      </div>
-      <div class="auth-msg" id="loginMsg"></div>
-      <button class="auth-action-btn" onclick="doLogin()">Войти</button>
-      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('forgotFlow')">Забыл пароль?</p>
-      <p style="margin-top:8px;font-size:12px;color:var(--text2);text-align:center;">Нет аккаунта? <span style="color:var(--a1);cursor:pointer;" onclick="showFlow('regFlow1')">Зарегистрироваться</span></p>
-    </div>
-
-    <!-- ВХОД: 2FA код -->
-    <div id="flowLogin2fa" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Подтверждение входа</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Код отправлен на вашу почту</p>
-      <div class="auth-field"><input type="text" id="login2faCode" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
-      <div class="auth-msg" id="login2faMsg"></div>
-      <button class="auth-action-btn" onclick="doLogin2fa()">Подтвердить</button>
-      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('flowLogin')">← Назад</p>
-    </div>
-
-    <!-- РЕГИСТРАЦИЯ: шаг 1 — email -->
-    <div id="regFlow1" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 1 из 4 — Введите ваш Email</p>
-      <div class="auth-field"><input type="email" id="regEmail" placeholder="Email"></div>
-      <div class="auth-msg" id="reg1Msg"></div>
-      <button class="auth-action-btn" onclick="regSendOtp()">Получить код</button>
-      <p style="margin-top:12px;font-size:12px;color:var(--text2);text-align:center;">Уже есть аккаунт? <span style="color:var(--a1);cursor:pointer;" onclick="showFlow('flowLogin')">Войти</span></p>
-    </div>
-
-    <!-- РЕГИСТРАЦИЯ: шаг 2 — OTP -->
-    <div id="regFlow2" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 2 из 4 — Код отправлен на <span id="regEmailShow" style="color:var(--a1)"></span></p>
-      <div class="auth-field"><input type="text" id="regOtp" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
-      <div class="auth-msg" id="reg2Msg"></div>
-      <button class="auth-action-btn" onclick="regVerifyOtp()">Подтвердить</button>
-      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('regFlow1')">← Изменить email</p>
-    </div>
-
-    <!-- РЕГИСТРАЦИЯ: шаг 3 — пароль -->
-    <div id="regFlow3" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 3 из 4 — Придумайте пароль</p>
-      <div class="auth-field"><input type="password" id="regPass1" placeholder="Пароль (минимум 6 символов)"></div>
-      <div class="auth-field"><input type="password" id="regPass2" placeholder="Повторите пароль"></div>
-      <div class="auth-msg" id="reg3Msg"></div>
-      <button class="auth-action-btn" onclick="regSetPassword()">Далее</button>
-    </div>
-
-    <!-- РЕГИСТРАЦИЯ: шаг 4 — никнейм + 2FA -->
-    <div id="regFlow4" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 4 из 4 — Последние штрихи</p>
-      <div class="auth-field"><input type="text" id="regUsername" placeholder="Никнейм" maxlength="24"></div>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin:16px 0;color:var(--text2);font-size:13px;">
-        <input type="checkbox" id="reg2fa" style="width:auto;accent-color:var(--a1);">
-        Включить двухфакторную аутентификацию (код на email при каждом входе)
-      </label>
-      <div class="auth-msg" id="reg4Msg"></div>
-      <button class="auth-action-btn" onclick="regFinish()">Завершить регистрацию</button>
-    </div>
-
-    <!-- ВОССТАНОВЛЕНИЕ ПАРОЛЯ: шаг 1 — email -->
-    <div id="forgotFlow" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Восстановление</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Введите email — пришлём код для сброса пароля</p>
-      <div class="auth-field"><input type="email" id="forgotEmail" placeholder="Email"></div>
-      <div class="auth-msg" id="forgot1Msg"></div>
-      <button class="auth-action-btn" onclick="forgotSendOtp()">Отправить код</button>
-      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('flowLogin')">← Назад</p>
-    </div>
-
-    <!-- ВОССТАНОВЛЕНИЕ: шаг 2 — OTP -->
-    <div id="forgotFlow2" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Восстановление</div>
-      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Код отправлен на <span id="forgotEmailShow" style="color:var(--a1)"></span></p>
-      <div class="auth-field"><input type="text" id="forgotOtp" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
-      <div class="auth-msg" id="forgot2Msg"></div>
-      <button class="auth-action-btn" onclick="forgotVerifyOtp()">Подтвердить</button>
-    </div>
-
-    <!-- ВОССТАНОВЛЕНИЕ: шаг 3 — новый пароль -->
-    <div id="forgotFlow3" style="display:none">
-      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Новый пароль</div>
-      <div class="auth-field"><input type="password" id="forgotPass1" placeholder="Новый пароль"></div>
-      <div class="auth-field"><input type="password" id="forgotPass2" placeholder="Повторите пароль"></div>
-      <div class="auth-msg" id="forgot3Msg"></div>
-      <button class="auth-action-btn" onclick="forgotSetPassword()">Сохранить пароль</button>
-    </div>
-
-  </div>
-</div>
-
 /* ═══════ MOBILE VIEW SIMULATION ═══════ */
 .pf{display:contents;}
 body.mobile-view{background:#0a0a0a!important;display:flex;flex-direction:column;align-items:center;padding-bottom:60px;}
@@ -447,6 +356,7 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--glb);border-radius:3px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--a1);}
+
 /* ═══════ GUEST WARNING TOAST ═══════ */
 .guest-toast {
   position: fixed;
@@ -614,6 +524,7 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
 <body>
 
 <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
 <!-- GUEST WARNING TOAST -->
 <div class="guest-toast" id="guestToast">
   <div class="guest-toast-header">
@@ -629,6 +540,7 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
     <div class="guest-toast-progress" id="guestToastProgress"></div>
   </div>
 </div>
+
 <div class="ov" id="ov" onclick="closeFav()"></div>
 
 <!-- FAV PANEL -->
@@ -639,6 +551,106 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
   </div>
   <div class="fpb" id="fpb">
     <div class="fe"><i class="far fa-heart"></i><p>Здесь будут ваши любимые ароматы</p></div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal" id="authModal">
+  <div class="mi auth-modal-inner">
+    <span class="mx" onclick="closeAuthModal()">&times;</span>
+
+    <!-- ВХОД -->
+    <div id="flowLogin" style="display:block">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Вход в Aromoire</div>
+      <div class="auth-field"><input type="email" id="loginEmail" placeholder="Email"></div>
+      <div class="auth-field"><input type="password" id="loginPass" placeholder="Пароль"></div>
+      <div class="auth-msg" id="loginMsg"></div>
+      <button class="auth-action-btn" onclick="doLogin()">Войти</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('forgotFlow')">Забыл пароль?</p>
+      <p style="margin-top:8px;font-size:12px;color:var(--text2);text-align:center;">Нет аккаунта? <span style="color:var(--a1);cursor:pointer;" onclick="showFlow('regFlow1')">Зарегистрироваться</span></p>
+    </div>
+
+    <!-- ВХОД: 2FA код -->
+    <div id="flowLogin2fa" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Подтверждение входа</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Код отправлен на вашу почту</p>
+      <div class="auth-field"><input type="text" id="login2faCode" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
+      <div class="auth-msg" id="login2faMsg"></div>
+      <button class="auth-action-btn" onclick="doLogin2fa()">Подтвердить</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('flowLogin')">← Назад</p>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 1 — email -->
+    <div id="regFlow1" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 1 из 4 — Введите ваш Email</p>
+      <div class="auth-field"><input type="email" id="regEmail" placeholder="Email"></div>
+      <div class="auth-msg" id="reg1Msg"></div>
+      <button class="auth-action-btn" onclick="regSendOtp()">Получить код</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);text-align:center;">Уже есть аккаунт? <span style="color:var(--a1);cursor:pointer;" onclick="showFlow('flowLogin')">Войти</span></p>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 2 — OTP -->
+    <div id="regFlow2" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 2 из 4 — Код отправлен на <span id="regEmailShow" style="color:var(--a1)"></span></p>
+      <div class="auth-field"><input type="text" id="regOtp" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
+      <div class="auth-msg" id="reg2Msg"></div>
+      <button class="auth-action-btn" onclick="regVerifyOtp()">Подтвердить</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('regFlow1')">← Изменить email</p>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 3 — пароль -->
+    <div id="regFlow3" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 3 из 4 — Придумайте пароль</p>
+      <div class="auth-field"><input type="password" id="regPass1" placeholder="Пароль (минимум 6 символов)"></div>
+      <div class="auth-field"><input type="password" id="regPass2" placeholder="Повторите пароль"></div>
+      <div class="auth-msg" id="reg3Msg"></div>
+      <button class="auth-action-btn" onclick="regSetPassword()">Далее</button>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ: шаг 4 — никнейм + 2FA -->
+    <div id="regFlow4" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Регистрация</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Шаг 4 из 4 — Последние штрихи</p>
+      <div class="auth-field"><input type="text" id="regUsername" placeholder="Никнейм" maxlength="24"></div>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin:16px 0;color:var(--text2);font-size:13px;">
+        <input type="checkbox" id="reg2fa" style="width:auto;accent-color:var(--a1);">
+        Включить двухфакторную аутентификацию (код на email при каждом входе)
+      </label>
+      <div class="auth-msg" id="reg4Msg"></div>
+      <button class="auth-action-btn" onclick="regFinish()">Завершить регистрацию</button>
+    </div>
+
+    <!-- ВОССТАНОВЛЕНИЕ ПАРОЛЯ: шаг 1 — email -->
+    <div id="forgotFlow" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Восстановление</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Введите email — пришлём код для сброса пароля</p>
+      <div class="auth-field"><input type="email" id="forgotEmail" placeholder="Email"></div>
+      <div class="auth-msg" id="forgot1Msg"></div>
+      <button class="auth-action-btn" onclick="forgotSendOtp()">Отправить код</button>
+      <p style="margin-top:12px;font-size:12px;color:var(--text2);cursor:pointer;text-align:center;" onclick="showFlow('flowLogin')">← Назад</p>
+    </div>
+
+    <!-- ВОССТАНОВЛЕНИЕ: шаг 2 — OTP -->
+    <div id="forgotFlow2" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Восстановление</div>
+      <p style="color:var(--text2);font-size:13px;margin-bottom:16px;text-align:center;">Код отправлен на <span id="forgotEmailShow" style="color:var(--a1)"></span></p>
+      <div class="auth-field"><input type="text" id="forgotOtp" placeholder="Код из письма" maxlength="8" style="letter-spacing:4px;text-align:center;font-size:20px;"></div>
+      <div class="auth-msg" id="forgot2Msg"></div>
+      <button class="auth-action-btn" onclick="forgotVerifyOtp()">Подтвердить</button>
+    </div>
+
+    <!-- ВОССТАНОВЛЕНИЕ: шаг 3 — новый пароль -->
+    <div id="forgotFlow3" style="display:none">
+      <div class="stitle" style="justify-content:center;margin-bottom:24px;font-size:26px;">Новый пароль</div>
+      <div class="auth-field"><input type="password" id="forgotPass1" placeholder="Новый пароль"></div>
+      <div class="auth-field"><input type="password" id="forgotPass2" placeholder="Повторите пароль"></div>
+      <div class="auth-msg" id="forgot3Msg"></div>
+      <button class="auth-action-btn" onclick="forgotSetPassword()">Сохранить пароль</button>
+    </div>
+
   </div>
 </div>
 
@@ -835,7 +847,7 @@ var DB = [
    STATE
 ═══════════════════════════════════════════════════ */
 var curF='all', curR=[], favs=[], curV='desktop';
-var currentUser=null, currentPerfumeId=null, curAuthTab='login';
+var currentUser=null, currentPerfumeId=null;
 
 try{ favs=JSON.parse(localStorage.getItem('aromoire_favs')||'[]'); }catch(e){ favs=[]; }
 
@@ -893,16 +905,16 @@ function onAuthBtnClick() {
 /* ═══════════════════════════════════════════════════
    AUTH MODAL
 ═══════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════
-   AUTH FLOWS
-═══════════════════════════════════════════════════ */
 var regTempUser = null;
 
 function showFlow(id) {
   var flows = ['flowLogin','flowLogin2fa','regFlow1','regFlow2','regFlow3','regFlow4','forgotFlow','forgotFlow2','forgotFlow3'];
-  for (var i = 0; i < flows.length; i++)
-    document.getElementById(flows[i]).style.display = 'none';
-  document.getElementById(id).style.display = 'block';
+  for (var i = 0; i < flows.length; i++) {
+    var el = document.getElementById(flows[i]);
+    if (el) el.style.display = 'none';
+  }
+  var target = document.getElementById(id);
+  if (target) target.style.display = 'block';
 }
 
 function openAuthModal() {
@@ -925,11 +937,9 @@ function doLogin() {
     .then(function(res) {
       if (res.error) { authMsg('loginMsg','Ошибка: ' + res.error.message,'err'); return; }
       currentUser = res.data.user;
-      // Проверяем 2FA
       sb.from('profiles').select('two_fa_enabled,username').eq('id', currentUser.id).single()
         .then(function(p) {
           if (p.data && p.data.two_fa_enabled) {
-            // Отправляем OTP для 2FA
             sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false } })
               .then(function() { showFlow('flowLogin2fa'); })
               .catch(function() { authMsg('loginMsg','Ошибка отправки кода','err'); });
@@ -1116,7 +1126,6 @@ function toggleFav(id, e) {
   if (!currentUser) {
     showGuestToast();
   } else {
-    // синхронизируем с БД только для авторизованных
     var wasFav = isFav(id);
     if (wasFav) {
       sb.from('favorites').delete().eq('user_id',currentUser.id).eq('perfume_id',id).then(function(){}).catch(function(){});
@@ -1158,7 +1167,6 @@ function renderFP() {
   if (!b) return;
   var header = '';
   if (currentUser) {
-    // Показываем блок пользователя с кнопкой выхода
     var uname = document.getElementById('authBtnLabel') ? document.getElementById('authBtnLabel').textContent : 'Аккаунт';
     var email = currentUser.email || '';
     var letter = uname.charAt(0).toUpperCase();
@@ -1170,7 +1178,6 @@ function renderFP() {
       + '<button class="fav-auth-btn danger" style="width:100%" onclick="doSignOut()"><i class="fas fa-sign-out-alt" style="margin-right:6px"></i>Выйти из аккаунта</button>'
       + '</div>';
   } else {
-    // Гостевой блок
     header = '<div class="fav-auth-block">'
       + '<p>Войдите в аккаунт, чтобы сохранить избранное навсегда и получить доступ с любого устройства.</p>'
       + '<div class="fav-auth-btns">'
@@ -1194,11 +1201,11 @@ function renderFP() {
   }
   b.innerHTML = header + list;
 }
+
 function stayAsGuest() {
-  // Просто закрываем панель, пользователь остаётся гостем
-  // Предупреждение уже показано при первом добавлении в избранное
   closeFav();
 }
+
 /* ═══════ GUEST TOAST ═══════ */
 var guestToastShown = false;
 function showGuestToast() {
@@ -1217,7 +1224,6 @@ function hideGuestToast() {
   if (!toast) return;
   if (toast._timer) clearTimeout(toast._timer);
   toast.classList.remove('show');
-
 }
 
 function rmFav(id) {
@@ -1399,7 +1405,6 @@ function showD(id) {
   h+='<button class="mcb" onclick="closeMod()">Закрыть</button>';
   h+='</div>';
 
-  // Комментарии
   h+='<div class="comments-area">';
   h+='<h3>Обсуждение</h3>';
   h+='<div class="comment-list" id="commentList"><div style="color:var(--text2);font-style:italic;text-align:center;padding:16px 0">Загрузка...</div></div>';
