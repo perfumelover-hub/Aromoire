@@ -256,7 +256,99 @@ body.theme-azure .cbi:has(input:checked){background:rgba(42,82,152,.10);}
   .macts{flex-direction:column;gap:10px;}
 }
 
-/* ═══════ AUTH MODAL ═══════ */
+/* ═══════ ACCOUNT DROPDOWN ═══════ */
+.acc-dropdown {
+  position: fixed;
+  top: 68px;
+  right: 28px;
+  z-index: 400;
+  width: 260px;
+  background: var(--bg2);
+  border: 1px solid var(--glb);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px) scale(.97);
+  transition: opacity .25s ease, transform .25s ease;
+}
+.acc-dropdown.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+.acc-dd-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.acc-dd-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fh);
+  font-size: 17px;
+  font-weight: 700;
+  color: #000;
+  flex-shrink: 0;
+}
+.acc-dd-info { flex: 1; min-width: 0; }
+.acc-dd-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.acc-dd-email {
+  font-size: 10px;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+.acc-dd-divider {
+  height: 1px;
+  background: var(--glb);
+  margin-bottom: 10px;
+}
+.acc-dd-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--fb);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .25s;
+  text-align: left;
+}
+.acc-dd-item:hover { background: var(--gl); color: var(--text); }
+.acc-dd-logout { color: var(--danger); }
+.acc-dd-logout:hover { background: rgba(196,122,110,.10); color: var(--danger); }
+
+@media(max-width:600px) {
+  .acc-dropdown { right: 12px; top: 60px; width: calc(100vw - 24px); }
+}
+
 .auth-modal-inner{max-width:480px;}
 .auth-field{margin-bottom:14px;}
 .auth-field input{width:100%;padding:13px 18px;background:var(--gl);border:1px solid var(--glb);border-radius:13px;font-size:14px;color:var(--text);font-family:var(--fb);transition:all .3s;}
@@ -654,6 +746,21 @@ footer{margin-top:90px;background:var(--bg2);border-top:1px solid var(--glb);pad
   </div>
 </div>
 
+<!-- ACCOUNT DROPDOWN -->
+<div class="acc-dropdown" id="accDropdown">
+  <div class="acc-dd-user">
+    <div class="acc-dd-avatar" id="accDdAvatar">?</div>
+    <div class="acc-dd-info">
+      <div class="acc-dd-name" id="accDdName">—</div>
+      <div class="acc-dd-email" id="accDdEmail">—</div>
+    </div>
+  </div>
+  <div class="acc-dd-divider"></div>
+  <button class="acc-dd-item acc-dd-logout" onclick="doSignOut();closeAccountDropdown();">
+    <i class="fas fa-sign-out-alt"></i> Выйти из аккаунта
+  </button>
+</div>
+
 <!-- HEADER -->
 <header>
   <div class="hi">
@@ -899,7 +1006,11 @@ function updateHeaderUI(username) {
 }
 
 function onAuthBtnClick() {
-  openAuthModal();
+  if (currentUser) {
+    toggleAccountDropdown();
+  } else {
+    openAuthModal();
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1084,9 +1195,47 @@ function doSignOut() {
   });
 }
 
+/* ═══════════════════════════════════════════════════
+   ACCOUNT DROPDOWN
+═══════════════════════════════════════════════════ */
+function toggleAccountDropdown() {
+  var dd = document.getElementById('accDropdown');
+  if (!dd) return;
+  if (dd.classList.contains('open')) {
+    closeAccountDropdown();
+  } else {
+    openAccountDropdown();
+  }
+}
+
+function openAccountDropdown() {
+  var dd = document.getElementById('accDropdown');
+  if (!dd || !currentUser) return;
+  var uname = document.getElementById('authBtnLabel') ? document.getElementById('authBtnLabel').textContent : 'Аккаунт';
+  var email = currentUser.email || '';
+  var letter = uname.charAt(0).toUpperCase();
+  document.getElementById('accDdAvatar').textContent = letter;
+  document.getElementById('accDdName').textContent = uname;
+  document.getElementById('accDdEmail').textContent = email;
+  dd.classList.add('open');
+}
+
+function closeAccountDropdown() {
+  var dd = document.getElementById('accDropdown');
+  if (dd) dd.classList.remove('open');
+}
+
 window.addEventListener('click', function(e) {
   if (e.target === document.getElementById('authModal')) closeAuthModal();
   if (e.target === document.getElementById('modal')) closeMod();
+  // Закрываем дропдаун при клике вне его и вне кнопки аккаунта
+  var dd = document.getElementById('accDropdown');
+  var btn = document.getElementById('authBtn');
+  if (dd && dd.classList.contains('open')) {
+    if (!dd.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+      closeAccountDropdown();
+    }
+  }
 });
 
 /* ═══════════════════════════════════════════════════
@@ -1166,18 +1315,7 @@ function renderFP() {
   var b = document.getElementById('fpb');
   if (!b) return;
   var header = '';
-  if (currentUser) {
-    var uname = document.getElementById('authBtnLabel') ? document.getElementById('authBtnLabel').textContent : 'Аккаунт';
-    var email = currentUser.email || '';
-    var letter = uname.charAt(0).toUpperCase();
-    header = '<div class="fav-user-block">'
-      + '<div class="fav-user-avatar">'+letter+'</div>'
-      + '<div class="fav-user-info"><div class="fav-user-name">'+uname+'</div><div class="fav-user-email">'+email+'</div></div>'
-      + '</div>'
-      + '<div style="margin-bottom:12px;">'
-      + '<button class="fav-auth-btn danger" style="width:100%" onclick="doSignOut()"><i class="fas fa-sign-out-alt" style="margin-right:6px"></i>Выйти из аккаунта</button>'
-      + '</div>';
-  } else {
+  if (!currentUser) {
     header = '<div class="fav-auth-block">'
       + '<p>Войдите в аккаунт, чтобы сохранить избранное навсегда и получить доступ с любого устройства.</p>'
       + '<div class="fav-auth-btns">'
@@ -1490,6 +1628,37 @@ function addComment() {
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+/* ═══════════════════════════════════════════════════
+   ENTER KEY SUPPORT FOR AUTH MODAL
+═══════════════════════════════════════════════════ */
+document.getElementById('authModal').addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter') return;
+
+  // Не срабатывает на чекбоксе
+  if (e.target.type === 'checkbox') return;
+
+  var flows = {
+    flowLogin:    doLogin,
+    flowLogin2fa: doLogin2fa,
+    regFlow1:     regSendOtp,
+    regFlow2:     regVerifyOtp,
+    regFlow3:     regSetPassword,
+    regFlow4:     regFinish,
+    forgotFlow:   forgotSendOtp,
+    forgotFlow2:  forgotVerifyOtp,
+    forgotFlow3:  forgotSetPassword
+  };
+
+  for (var id in flows) {
+    var el = document.getElementById(id);
+    if (el && el.style.display !== 'none') {
+      e.preventDefault();
+      flows[id]();
+      break;
+    }
+  }
+});
 
 /* ═══════════════════════════════════════════════════
    INIT
